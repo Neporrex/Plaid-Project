@@ -1,201 +1,117 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-import asyncio
 from utils.db import get_pool
+import asyncio
+from datetime import datetime
+
+VOTE_DURATION = 60  # secondes
 
 class VoteView(discord.ui.View):
-    def __init__(self, trial_id: int, timeout_seconds: int = 120):
-        super().__init__(timeout=timeout_seconds)
+    def __init__(self, trial_id: int, accused_id: int):
+        super().__init__(timeout=VOTE_DURATION)
         self.trial_id = trial_id
+        self.accused_id = accused_id
+        self.voters = set()
 
-    @discord.ui.button(label="⚖️ Coupable", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="⚔️ Coupable", style=discord.ButtonStyle.danger)
     async def guilty(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.cast_vote(interaction, "guilty")
-
-    @discord.ui.button(label="😇 Innocent", style=discord.ButtonStyle.success)
-    async def innocent(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.cast_vote(interaction, "innocent")
-
-    async def cast_vote(self, interaction: discord.Interaction, vote: str):
+        if interaction.user.id in self.voters:
+            return await interaction.response.send_message("Vous avez déjà voté !", ephemeral=True)
+        if interaction.user.id == self.accused_id:
+            return await interaction.response.send_message("Vous ne pouvez pas voter pour votre propre procès !", ephemeral=True)
+        self.voters.add(interaction.user.id)
         pool = await get_pool()
         async with pool.acquire() as conn:
-            existing = await conn.fetchrow(
-                "SELECT * FROM votes WHERE trial_id=$1 AND voter_id=$2",
-                self.trial_id, interaction.user.id
-            )
-            if existing:
-                await interaction.response.send_message("❌ Tu as déjà voté !", ephemeral=True)
-                return
+            await conn.execute("UPDATE trials SET votes_guilty = votes_guilty + 1 WHERE id=$1", self.trial_id)
+        await interaction.response.send_message("⚔️ Vote enregistré : **Coupable**", ephemeral=True)
 
-            trial = await conn.fetchrow(
-                "SELECT * FROM trials WHERE id=$1", self.trial_id
-            )
-            if interaction.user.id in [trial['accuser_id'], trial['accused_id']]:
-                await interaction.response.send_message("❌ Tu ne peux pas voter dans ton propre procès !", ephemeral=True)
-                return
-
-            await conn.execute(
-                "INSERT INTO votes (trial_id, voter_id, vote) VALUES ($1, $2, $3)",
-                self.trial_id, interaction.user.id, vote
-            )
-
-            if vote == "guilty":
-                await conn.execute(
-                    "UPDATE trials SET votes_guilty = votes_guilty + 1 WHERE id=$1",
-                    self.trial_id
-                )
-            else:
-                await conn.execute(
-                    "UPDATE trials SET votes_innocent = votes_innocent + 1 WHERE id=$1",
-                    self.trial_id
-                )
-
-            trial = await conn.fetchrow("SELECT * FROM trials WHERE id=$1", self.trial_id)
-            emoji = "🔴" if vote == "guilty" else "🟢"
-            await interaction.response.send_message(
-                f"{emoji} Vote enregistré ! (Coupable: {trial['votes_guilty']} | Innocent: {trial['votes_innocent']})",
-                ephemeral=True
-            )
-
+    @discord.ui.button(label="🕊️ Innocent", style=discord.ButtonStyle.success)
+    async def innocent(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user.id in self.voters:
+            return await interaction.response.send_message("Vous avez déjà voté !", ephemeral=True)
+        if interaction.user.id == self.accused_id:
+            return await interaction.response.send_message("Vous ne pouvez pas voter pour votre propre procès !", ephemeral=True)
+        self.voters.add(interaction.user.id)
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            await conn.execute("UPDATE trials SET votes_innocent = votes_innocent + 1 WHERE id=$1", self.trial_id)
+        await interaction.response.send_message("🕊️ Vote enregistré : **Innocent**", ephemeral=True)
 
 class Tribunal(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="accuser", description="⚖️ Ouvrir un procès contre quelqu'un")
-    @app_commands.describe(
-        accusé="La personne à juger",
-        raison="Pourquoi tu l'accuses",
-        durée="Durée du vote en minutes (défaut: 2)"
-    )
-    async def accuser(
-        self, 
-        interaction: discord.Interaction, 
-        accusé: discord.Member, 
-        raison: str,
-        durée: int = 2
-    ):
-        if accusé.id == interaction.user.id:
-            await interaction.response.send_message("❌ Tu ne peux pas t'accuser toi-même !", ephemeral=True)
-            return
-
-        if accusé.bot:
-            await interaction.response.send_message("❌ Tu ne peux pas accuser un bot !", ephemeral=True)
-            return
+    @app_commands.command(name="accuser", description="⚖️ Ouvrir un procès contre un membre")
+    @app_commands.describe(membre="Le membre à accuser", raison="Le chef d'accusation")
+    async def accuser(self, interaction: discord.Interaction, membre: discord.Member, raison: str):
+        if membre.id == interaction.user.id:
+            return await interaction.response.send_message("Vous ne pouvez pas vous accuser vous-même !", ephemeral=True)
 
         pool = await get_pool()
         async with pool.acquire() as conn:
-            for uid in [interaction.user.id, accusé.id]:
-                await conn.execute("""
-                    INSERT INTO users (discord_id, guild_id)
-                    VALUES ($1, $2) ON CONFLICT DO NOTHING
-                """, uid, interaction.guild.id)
-
-            trial = await conn.fetchrow("""
-                INSERT INTO trials (guild_id, accuser_id, accused_id, reason, channel_id)
-                VALUES ($1, $2, $3, $4, $5) RETURNING id
-            """, interaction.guild.id, interaction.user.id, accusé.id, raison, interaction.channel.id)
+            trial = await conn.fetchrow(
+                "INSERT INTO trials (guild_id, accused_id, accuser_id, reason, status) VALUES ($1,$2,$3,$4,'open') RETURNING id",
+                interaction.guild.id, membre.id, interaction.user.id, raison
+            )
+            await conn.execute(
+                "INSERT INTO users (guild_id, discord_id) VALUES ($1,$2) ON CONFLICT DO NOTHING",
+                interaction.guild.id, membre.id
+            )
 
         trial_id = trial['id']
-        timeout = durée * 60
+        view = VoteView(trial_id, membre.id)
 
         embed = discord.Embed(
-            title=f"⚖️ PROCÈS #{trial_id}",
-            description=f"**{interaction.user.display_name}** accuse **{accusé.display_name}**",
-            color=0xFF6B6B
+            title="⚖️ TRIBUNAL DE PLAID — PROCÈS OUVERT",
+            description=f"*Le parchemin du destin se déroule...*",
+            color=0xC8A96E
         )
-        embed.add_field(name="📋 Chef d'accusation", value=raison, inline=False)
-        embed.add_field(name="⏱️ Durée du vote", value=f"{durée} minute(s)", inline=True)
-        embed.add_field(name="📊 Votes", value="Coupable: 0 | Innocent: 0", inline=True)
-        embed.set_thumbnail(url=accusé.display_avatar.url)
-        embed.set_footer(text="Cliquez sur les boutons pour voter !")
+        embed.add_field(name="📜 Accusé", value=membre.mention, inline=True)
+        embed.add_field(name="⚔️ Accusateur", value=interaction.user.mention, inline=True)
+        embed.add_field(name="📋 Chef d'accusation", value=f"*{raison}*", inline=False)
+        embed.add_field(name="⏳ Durée du vote", value=f"{VOTE_DURATION} secondes", inline=True)
+        embed.set_footer(text=f"Procès #{trial_id} • Que justice soit rendue")
+        embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/⚖️")
 
-        view = VoteView(trial_id, timeout)
         await interaction.response.send_message(embed=embed, view=view)
-
         msg = await interaction.original_response()
+
+        await asyncio.sleep(VOTE_DURATION)
+        view.stop()
+
         async with pool.acquire() as conn:
-            await conn.execute(
-                "UPDATE trials SET message_id=$1 WHERE id=$2",
-                msg.id, trial_id
-            )
+            trial_data = await conn.fetchrow("SELECT * FROM trials WHERE id=$1", trial_id)
+            guilty = trial_data['votes_guilty']
+            innocent = trial_data['votes_innocent']
 
-        await asyncio.sleep(timeout)
-        await self.end_trial(interaction, trial_id, msg)
-
-    async def end_trial(self, interaction, trial_id, message):
-        pool = await get_pool()
-        async with pool.acquire() as conn:
-            trial = await conn.fetchrow("SELECT * FROM trials WHERE id=$1", trial_id)
-
-            if trial['status'] != 'en_cours':
-                return
-
-            guilty = trial['votes_guilty']
-            innocent = trial['votes_innocent']
-            total = guilty + innocent
-
-            if total == 0:
-                verdict = "annulé"
-                color = 0x95A5A6
-            elif guilty > innocent:
+            if guilty > innocent:
                 verdict = "coupable"
-                color = 0xFF0000
-            elif innocent > guilty:
-                verdict = "innocent"
-                color = 0x00FF00
+                rep_change = -20
+                await conn.execute("UPDATE trials SET verdict='coupable', status='closed', ended_at=NOW() WHERE id=$1", trial_id)
+                await conn.execute("UPDATE users SET reputation=reputation-20, losses=losses+1, total_trials=total_trials+1 WHERE guild_id=$1 AND discord_id=$2", interaction.guild.id, membre.id)
+                await conn.execute("INSERT INTO casier (guild_id, discord_id, infraction, verdict) VALUES ($1,$2,$3,'coupable')", interaction.guild.id, membre.id, raison)
+                color = 0xE74C3C
+                verdict_text = "⚔️ **COUPABLE** — La sentence est prononcée !"
             else:
-                verdict = "égalité"
-                color = 0xFFFF00
+                verdict = "innocent"
+                rep_change = +10
+                await conn.execute("UPDATE trials SET verdict='innocent', status='closed', ended_at=NOW() WHERE id=$1", trial_id)
+                await conn.execute("UPDATE users SET reputation=reputation+10, wins=wins+1, total_trials=total_trials+1 WHERE guild_id=$1 AND discord_id=$2", interaction.guild.id, membre.id)
+                color = 0x2ECC71
+                verdict_text = "🕊️ **INNOCENT** — L'accusé est libre !"
 
-            await conn.execute("""
-                UPDATE trials SET status='terminé', verdict=$1, ended_at=NOW() WHERE id=$2
-            """, verdict, trial_id)
+        result_embed = discord.Embed(
+            title="📜 VERDICT FINAL",
+            description=verdict_text,
+            color=color
+        )
+        result_embed.add_field(name="⚔️ Votes Coupable", value=str(guilty), inline=True)
+        result_embed.add_field(name="🕊️ Votes Innocent", value=str(innocent), inline=True)
+        result_embed.add_field(name="📊 Impact réputation", value=f"{rep_change:+d}", inline=True)
+        result_embed.set_footer(text=f"Procès #{trial_id} • PLAID a parlé")
 
-            if verdict == "coupable":
-                await conn.execute("""
-                    UPDATE users SET reputation = GREATEST(reputation - 15, 0),
-                    total_trials = total_trials + 1, guilty_count = guilty_count + 1
-                    WHERE discord_id=$1 AND guild_id=$2
-                """, trial['accused_id'], trial['guild_id'])
-
-                await conn.execute("""
-                    INSERT INTO casier (discord_id, guild_id, trial_id, offense, punishment, rep_change)
-                    VALUES ($1, $2, $3, $4, $5, $6)
-                """, trial['accused_id'], trial['guild_id'], trial_id, trial['reason'], 'Reconnu coupable', -15)
-
-            elif verdict == "innocent":
-                await conn.execute("""
-                    UPDATE users SET reputation = LEAST(reputation + 5, 200),
-                    total_trials = total_trials + 1, innocent_count = innocent_count + 1
-                    WHERE discord_id=$1 AND guild_id=$2
-                """, trial['accused_id'], trial['guild_id'])
-
-            accused = await interaction.guild.fetch_member(trial['accused_id'])
-
-            embed = discord.Embed(
-                title=f"⚖️ VERDICT — PROCÈS #{trial_id}",
-                color=color
-            )
-            embed.add_field(name="👤 Accusé", value=accused.display_name, inline=True)
-            embed.add_field(name="📋 Raison", value=trial['reason'], inline=True)
-            embed.add_field(name="📊 Résultat", value=f"Coupable: {guilty} | Innocent: {innocent}", inline=False)
-
-            verdict_text = {
-                "coupable": "🔴 **COUPABLE** — Réputation -15",
-                "innocent": "🟢 **INNOCENT** — Réputation +5",
-                "égalité": "🟡 **ÉGALITÉ** — Aucune sanction",
-                "annulé": "⚪ **ANNULÉ** — Personne n'a voté"
-            }
-            embed.add_field(name="⚖️ Verdict", value=verdict_text[verdict], inline=False)
-
-            try:
-                await message.edit(embed=embed, view=None)
-            except:
-                channel = interaction.channel
-                await channel.send(embed=embed)
-
+        await msg.edit(embed=result_embed, view=None)
 
 async def setup(bot):
     await bot.add_cog(Tribunal(bot))
