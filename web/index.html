@@ -1,92 +1,869 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLAID — Justice Discord</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLAID — Tribunal du Royaume</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #f2e8c9;
+    --parchment-dark: #e0cc9a;
+    --parchment-deep: #c9a96e;
+    --ink: #2a1a08;
+    --ink-light: #5a3a1a;
+    --ink-faded: #8b6340;
+    --blood: #8b0000;
+    --blood-bright: #c0392b;
+    --gold: #b8860b;
+    --gold-bright: #d4a017;
+    --gold-shine: #f0c040;
+    --emerald: #1a5c2a;
+    --royal: #1a2a5c;
+    --shadow: rgba(42, 26, 8, 0.4);
+    --glow: rgba(212, 160, 23, 0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0d0a05;
+    color: var(--ink);
+    font-family: 'IM Fell English', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(139, 0, 0, 0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(184, 134, 11, 0.06) 0%, transparent 60%);
+  }
+
+  /* TEXTURE DE FOND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    text-align: center;
+    padding: 50px 20px 40px;
+    background: linear-gradient(180deg, #1a0e02 0%, #0d0a05 100%);
+    border-bottom: 3px solid var(--gold);
+    overflow: hidden;
+  }
+
+  header::before, header::after {
+    content: '✦ ⚖️ ✦';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    color: var(--gold);
+    opacity: 0.5;
+  }
+  header::before { left: 40px; }
+  header::after { right: 40px; }
+
+  .header-seal {
+    width: 90px;
+    height: 90px;
+    background: radial-gradient(circle, var(--gold-bright), var(--gold));
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.8rem;
+    box-shadow: 0 0 30px var(--glow), 0 0 60px rgba(212,160,23,0.15), inset 0 2px 4px rgba(255,255,255,0.3);
+    border: 3px solid var(--gold-shine);
+    animation: sealPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes sealPulse {
+    0%, 100% { box-shadow: 0 0 30px var(--glow), 0 0 60px rgba(212,160,23,0.15); }
+    50% { box-shadow: 0 0 50px rgba(212,160,23,0.6), 0 0 90px rgba(212,160,23,0.25); }
+  }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    color: var(--gold-bright);
+    text-shadow: 0 0 20px var(--glow), 2px 2px 0 var(--ink);
+    letter-spacing: 0.15em;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--parchment-deep);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  /* GUILD ID INPUT */
+  .guild-section {
+    display: flex;
+    justify-content: center;
+    padding: 30px 20px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .guild-section input {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    padding: 12px 20px;
+    width: 280px;
+    background: #1a1005;
+    border: 2px solid var(--gold);
+    color: var(--parchment);
+    border-radius: 4px;
+    outline: none;
+    letter-spacing: 0.05em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .guild-section input::placeholder { color: var(--ink-faded); }
+  .guild-section input:focus {
+    border-color: var(--gold-shine);
+    box-shadow: 0 0 15px var(--glow);
+  }
+
+  .btn-primary {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+    color: var(--ink);
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(184,134,11,0.4);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, var(--gold-shine), var(--gold));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212,160,23,0.5);
+  }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 0 20px;
+    border-bottom: 2px solid var(--gold);
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 14px 22px;
+    background: transparent;
+    color: var(--ink-faded);
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .tab-btn:hover { color: var(--gold-bright); }
+
+  .tab-btn.active {
+    color: var(--gold-shine);
+    border-bottom-color: var(--gold-shine);
+  }
+
+  /* MAIN CONTENT */
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .tab-content { display: none; animation: fadeIn 0.5s ease; }
+  .tab-content.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* PARCHEMIN CARD */
+  .parchment-card {
+    background: linear-gradient(145deg, var(--parchment) 0%, var(--parchment-dark) 40%, #d4bc8a 100%);
+    border-radius: 4px;
+    padding: 30px;
+    position: relative;
+    box-shadow:
+      0 10px 40px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,255,255,0.4),
+      inset 0 -1px 0 rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+
+  .parchment-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .card-border {
+    position: absolute;
+    inset: 6px;
+    border: 2px solid rgba(101, 67, 33, 0.4);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .card-corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: var(--gold);
+    border-style: solid;
+    opacity: 0.7;
+  }
+  .card-corner.tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
+  .card-corner.tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
+  .card-corner.bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
+  .card-corner.br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
+
+  /* STATS GRID */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    background: linear-gradient(145deg, #1a1005, #0f0a03);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 24px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 20px var(--glow);
+  }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
+  }
+
+  .stat-icon { font-size: 2.2rem; margin-bottom: 8px; display: block; }
+  .stat-value {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gold-shine);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faded);
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.4rem;
+    color: var(--ink);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  /* TABLE PARCHEMIN */
+  .parchment-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .parchment-table th {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--parchment-deep);
+    text-align: left;
+  }
+
+  .parchment-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(101, 67, 33, 0.2);
+    color: var(--ink);
+    vertical-align: middle;
+  }
+
+  .parchment-table tr:hover td { background: rgba(180, 140, 40, 0.1); }
+  .parchment-table tr:last-child td { border-bottom: none; }
+
+  /* BADGES */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .badge-coupable { background: rgba(139,0,0,0.15); color: var(--blood-bright); border: 1px solid var(--blood); }
+  .badge-innocent { background: rgba(26,92,42,0.15); color: #27ae60; border: 1px solid #1a5c2a; }
+  .badge-open { background: rgba(184,134,11,0.15); color: var(--gold-bright); border: 1px solid var(--gold); }
+
+  /* RANK BADGE */
+  .rank-badge {
+    font-size: 0.82rem;
+    color: var(--ink-light);
+    font-style: italic;
+  }
+
+  /* LEADERBOARD MEDALS */
+  .medal-1 { color: #FFD700; font-size: 1.3rem; }
+  .medal-2 { color: #C0C0C0; font-size: 1.3rem; }
+  .medal-3 { color: #CD7F32; font-size: 1.3rem; }
+  .medal-n { color: var(--ink-faded); font-family: 'Cinzel', serif; font-size: 0.9rem; }
+
+  /* REP BAR */
+  .rep-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rep-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(101,67,33,0.2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .rep-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-shine));
+    border-radius: 4px;
+    transition: width 1s ease;
+  }
+  .rep-val {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    color: var(--gold-bright);
+    min-width: 35px;
+    text-align: right;
+  }
+
+  /* QUEST CARDS */
+  .quest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .quest-card {
+    background: linear-gradient(145deg, var(--parchment), var(--parchment-dark));
+    border: 2px solid var(--parchment-deep);
+    border-radius: 4px;
+    padding: 22px;
+    position: relative;
+    transition: transform 0.3s;
+  }
+
+  .quest-card:hover { transform: translateY(-3px); }
+
+  .quest-card::before {
+    content: '📜';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    font-size: 1.4rem;
+    background: var(--parchment);
+    padding: 0 4px;
+  }
+
+  .quest-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .quest-desc {
+    font-size: 0.9rem;
+    color: var(--ink-light);
+    font-style: italic;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .quest-rewards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .reward-chip {
+    background: rgba(184,134,11,0.15);
+    border: 1px solid var(--gold);
+    color: var(--ink-light);
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-size: 0.8rem;
+    font-family: 'Cinzel', serif;
+  }
+
+  /* GUILD CARDS */
+  .guildes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .guilde-card {
+    background: linear-gradient(145deg, #1a1005, #120d04);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .guilde-card:hover {
+    border-color: var(--gold-shine);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4), 0 0 15px var(--glow);
+  }
+
+  .guilde-emblem { font-size: 3rem; margin-bottom: 10px; display: block; }
+  .guilde-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1rem;
+    color: var(--gold-bright);
+    margin-bottom: 6px;
+  }
+  .guilde-desc {
+    font-size: 0.85rem;
+    color: var(--ink-faded);
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+  .guilde-members {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--parchment-deep);
+    letter-spacing: 0.1em;
+  }
+
+  /* BOUNTIES */
+  .bounty-card {
+    background: linear-gradient(135deg, rgba(139,0,0,0.1), rgba(26,8,0,0.95));
+    border: 1px solid var(--blood);
+    border-radius: 4px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s;
+    margin-bottom: 12px;
+  }
+
+  .bounty-card:hover { border-color: var(--blood-bright); transform: translateX(4px); }
+  .bounty-amount {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.5rem;
+    color: var(--gold-shine);
+    white-space: nowrap;
+  }
+  .bounty-target { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--parchment); }
+  .bounty-reason { font-size: 0.85rem; color: var(--ink-faded); font-style: italic; }
+
+  /* LOADING / EMPTY */
+  .loading-scroll {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-faded);
+    font-style: italic;
+    font-size: 1.1rem;
+  }
+
+  .empty-scroll {
+    text-align: center;
+    padding: 50px;
+    color: var(--ink-faded);
+    font-style: italic;
+  }
+
+  .empty-scroll::before { content: '📜'; font-size: 3rem; display: block; margin-bottom: 16px; opacity: 0.5; }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 30px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--ink-faded);
+    border-top: 1px solid rgba(184,134,11,0.2);
+    margin-top: 60px;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: #0d0a05; }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+
+  @media (max-width: 600px) {
+    .tab-btn { padding: 10px 12px; font-size: 0.75rem; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-brand">
-            <span class="logo">⚖️</span>
-            <span class="brand-name">PLAID</span>
-        </div>
-        <div class="nav-links">
-            <a href="index.html">Accueil</a>
-            <a href="pages/leaderboard.html">Classement</a>
-            <a href="pages/tribunal.html">Procès</a>
-            <a href="https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=8&scope=bot%20applications.commands" class="btn-invite">Inviter PLAID</a>
-        </div>
-    </nav>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h1>⚖️ PLAID</h1>
-            <p class="subtitle">La justice entre les mains de ta communauté</p>
-            <p class="description">Ouvre des procès, vote pour les verdicts, construis ta réputation. Le tribunal Discord ultime.</p>
-            <div class="hero-buttons">
-                <a href="https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=8&scope=bot%20applications.commands" class="btn btn-primary">Ajouter à Discord</a>
-                <a href="pages/leaderboard.html" class="btn btn-secondary">Voir le classement</a>
-            </div>
-        </div>
-        <div class="hero-stats" id="hero-stats">
-            <div class="stat-card">
-                <span class="stat-number" id="stat-servers">-</span>
-                <span class="stat-label">Serveurs</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="stat-trials">-</span>
-                <span class="stat-label">Procès</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="stat-users">-</span>
-                <span class="stat-label">Citoyens</span>
-            </div>
-        </div>
-    </section>
+<header>
+  <div class="header-seal">⚖️</div>
+  <h1>P L A I D</h1>
+  <p class="subtitle">Tribunal du Royaume — Archives Officielles</p>
+</header>
 
-    <section class="features">
-        <h2>Fonctionnalités</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <span class="feature-icon">⚖️</span>
-                <h3>Tribunal</h3>
-                <p>Accuse n'importe qui. La communauté vote le verdict.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">📊</span>
-                <h3>Réputation</h3>
-                <p>Chaque membre a un score. Tes actions ont des conséquences.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">📜</span>
-                <h3>Casier</h3>
-                <p>Tout est enregistré. Ton passé te suit.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">📝</span>
-                <h3>Lois custom</h3>
-                <p>Les admins créent les règles. Les membres les appliquent.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">🏆</span>
-                <h3>Classement</h3>
-                <p>Qui est le meilleur citoyen ? Qui est le pire criminel ?</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">🌐</span>
-                <h3>Dashboard</h3>
-                <p>Consulte les profils et stats depuis le web.</p>
-            </div>
+<div class="guild-section">
+  <input type="text" id="guildId" placeholder="ID du serveur Discord..." />
+  <button class="btn-primary" onclick="loadAll()">📜 Consulter les Archives</button>
+</div>
+
+<nav class="nav-tabs">
+  <button class="tab-btn active" onclick="switchTab('overview')">⚖️ Aperçu</button>
+  <button class="tab-btn" onclick="switchTab('leaderboard')">👑 Classement</button>
+  <button class="tab-btn" onclick="switchTab('trials')">📋 Procès</button>
+  <button class="tab-btn" onclick="switchTab('quests')">📜 Quêtes</button>
+  <button class="tab-btn" onclick="switchTab('guildes')">⚔️ Guildes</button>
+  <button class="tab-btn" onclick="switchTab('bounties')">💰 Primes</button>
+  <button class="tab-btn" onclick="switchTab('laws')">📖 Lois</button>
+</nav>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <div class="tab-content active" id="tab-overview">
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><span class="stat-icon">⚖️</span><div class="stat-value" id="stat-users">—</div><div class="stat-label">Citoyens</div></div>
+      <div class="stat-card"><span class="stat-icon">📋</span><div class="stat-value" id="stat-trials">—</div><div class="stat-label">Procès</div></div>
+      <div class="stat-card"><span class="stat-icon">📜</span><div class="stat-value" id="stat-laws">—</div><div class="stat-label">Lois</div></div>
+      <div class="stat-card"><span class="stat-icon">🗡️</span><div class="stat-value" id="stat-quests">—</div><div class="stat-label">Quêtes actives</div></div>
+      <div class="stat-card"><span class="stat-icon">⚔️</span><div class="stat-value" id="stat-guildes">—</div><div class="stat-label">Guildes</div></div>
+      <div class="stat-card"><span class="stat-icon">💰</span><div class="stat-value" id="stat-bounties">—</div><div class="stat-label">Primes actives</div></div>
+    </div>
+
+    <div class="parchment-card">
+      <div class="card-border"></div>
+      <div class="card-corner tl"></div><div class="card-corner tr"></div>
+      <div class="card-corner bl"></div><div class="card-corner br"></div>
+      <h2 class="section-title">👑 Top 5 Citoyens</h2>
+      <div id="topCitizens"><p class="empty-scroll">Entrez un ID de serveur pour consulter les archives.</p></div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="tab-content" id="tab-leaderboard">
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="loadLeaderboard('best')">👑 Réputation</button>
+      <button class="btn-primary" onclick="loadLeaderboard('gold')">🪙 Fortune</button>
+      <button class="btn-primary" onclick="loadLeaderboard('trials')">⚖️ Jugements</button>
+      <button class="btn-primary" onclick="loadLeaderboard('worst')">💀 Bannis</button>
+    </div>
+    <div class="parchment-card">
+      <div class="card-border"></div>
+      <div class="card-corner tl"></div><div class="card-corner tr"></div>
+      <div class="card-corner bl"></div><div class="card-corner br"></div>
+      <div id="leaderboardContent"><p class="empty-scroll">Entrez un ID de serveur.</p></div>
+    </div>
+  </div>
+
+  <!-- TRIALS -->
+  <div class="tab-content" id="tab-trials">
+    <div class="parchment-card">
+      <div class="card-border"></div>
+      <div class="card-corner tl"></div><div class="card-corner tr"></div>
+      <div class="card-corner bl"></div><div class="card-corner br"></div>
+      <h2 class="section-title">📋 Derniers Procès</h2>
+      <div id="trialsContent"><p class="empty-scroll">Entrez un ID de serveur.</p></div>
+    </div>
+  </div>
+
+  <!-- QUESTS -->
+  <div class="tab-content" id="tab-quests">
+    <h2 class="section-title" style="color:var(--parchment-dark)">📜 Tableau des Quêtes</h2>
+    <div class="quest-grid" id="questsContent">
+      <p class="empty-scroll" style="color:var(--ink-faded)">Entrez un ID de serveur.</p>
+    </div>
+  </div>
+
+  <!-- GUILDES -->
+  <div class="tab-content" id="tab-guildes">
+    <h2 class="section-title" style="color:var(--parchment-dark)">⚔️ Guildes du Royaume</h2>
+    <div class="guildes-grid" id="guildesContent">
+      <p class="empty-scroll" style="color:var(--ink-faded)">Entrez un ID de serveur.</p>
+    </div>
+  </div>
+
+  <!-- BOUNTIES -->
+  <div class="tab-content" id="tab-bounties">
+    <h2 class="section-title" style="color:var(--parchment-dark)">💰 Avis de Recherche</h2>
+    <div id="bountiesContent">
+      <p class="empty-scroll" style="color:var(--ink-faded)">Entrez un ID de serveur.</p>
+    </div>
+  </div>
+
+  <!-- LAWS -->
+  <div class="tab-content" id="tab-laws">
+    <div class="parchment-card">
+      <div class="card-border"></div>
+      <div class="card-corner tl"></div><div class="card-corner tr"></div>
+      <div class="card-corner bl"></div><div class="card-corner br"></div>
+      <h2 class="section-title">📖 Code Pénal du Royaume</h2>
+      <div id="lawsContent"><p class="empty-scroll">Entrez un ID de serveur.</p></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>✦ PLAID — Tribunal du Royaume ✦ Que la justice soit éternelle ✦</footer>
+
+<script>
+  const API = 'https://plaid-api.onrender.com';
+  let currentGuildId = null;
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function getRank(rep) {
+    if (rep >= 500) return '👑 Légende';
+    if (rep >= 300) return '⚔️ Chevalier';
+    if (rep >= 200) return '🛡️ Gardien';
+    if (rep >= 100) return '⚖️ Citoyen';
+    if (rep >= 50)  return '🧑 Lambda';
+    return '⛓️ Banni';
+  }
+
+  function repBar(rep) {
+    const pct = Math.max(0, Math.min(100, (rep / 500) * 100));
+    return `<div class="rep-bar-wrap">
+      <div class="rep-bar"><div class="rep-bar-fill" style="width:${pct}%"></div></div>
+      <span class="rep-val">${rep}</span>
+    </div>`;
+  }
+
+  function medal(i) {
+    if (i === 0) return '<span class="medal-1">👑</span>';
+    if (i === 1) return '<span class="medal-2">⚔️</span>';
+    if (i === 2) return '<span class="medal-3">🛡️</span>';
+    return `<span class="medal-n">#${i+1}</span>`;
+  }
+
+  async function apiFetch(path) {
+    const r = await fetch(API + path);
+    if (!r.ok) throw new Error('API Error ' + r.status);
+    return r.json();
+  }
+
+  async function loadAll() {
+    const id = document.getElementById('guildId').value.trim();
+    if (!id) return;
+    currentGuildId = id;
+
+    try {
+      const stats = await apiFetch(`/api/stats/${id}`);
+      document.getElementById('stat-users').textContent = stats.users;
+      document.getElementById('stat-trials').textContent = stats.trials;
+      document.getElementById('stat-laws').textContent = stats.laws;
+      document.getElementById('stat-quests').textContent = stats.quests;
+      document.getElementById('stat-guildes').textContent = stats.guildes;
+      document.getElementById('stat-bounties').textContent = stats.bounties;
+    } catch(e) {}
+
+    loadLeaderboard('best', true);
+    loadTrials();
+    loadQuests();
+    loadGuildes();
+    loadBounties();
+    loadLaws();
+  }
+
+  async function loadLeaderboard(sort = 'best', isTop5 = false) {
+    if (!currentGuildId) return;
+    const data = await apiFetch(`/api/leaderboard/${currentGuildId}?sort=${sort}&limit=10`).catch(() => []);
+
+    if (isTop5) {
+      const top5 = data.slice(0, 5);
+      if (!top5.length) { document.getElementById('topCitizens').innerHTML = '<p class="empty-scroll">Aucun citoyen enregistré.</p>'; return; }
+      document.getElementById('topCitizens').innerHTML = `
+        <table class="parchment-table">
+          <thead><tr><th>#</th><th>Citoyen</th><th>Rang</th><th>Réputation</th><th>🪙 Or</th></tr></thead>
+          <tbody>${top5.map((u,i) => `<tr>
+            <td>${medal(i)}</td>
+            <td style="font-family:'Cinzel',serif;font-weight:600">${u.discord_id}</td>
+            <td class="rank-badge">${getRank(u.reputation)}</td>
+            <td>${repBar(u.reputation)}</td>
+            <td style="color:var(--gold-bright)">${u.gold || 0} 🪙</td>
+          </tr>`).join('')}</tbody>
+        </table>`;
+      return;
+    }
+
+    if (!data.length) { document.getElementById('leaderboardContent').innerHTML = '<p class="empty-scroll">Aucune donnée.</p>'; return; }
+    document.getElementById('leaderboardContent').innerHTML = `
+      <table class="parchment-table">
+        <thead><tr><th>#</th><th>Discord ID</th><th>Rang</th><th>Réputation</th><th>🪙 Or</th><th>⚖️ Procès</th></tr></thead>
+        <tbody>${data.map((u,i) => `<tr>
+          <td>${medal(i)}</td>
+          <td style="font-family:'Cinzel',serif">${u.discord_id}</td>
+          <td class="rank-badge">${getRank(u.reputation)}</td>
+          <td>${repBar(u.reputation)}</td>
+          <td style="color:var(--gold-bright)">${u.gold || 0}</td>
+          <td>${u.total_trials}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+  }
+
+  async function loadTrials() {
+    if (!currentGuildId) return;
+    const data = await apiFetch(`/api/trials/${currentGuildId}?limit=20`).catch(() => []);
+    if (!data.length) { document.getElementById('trialsContent').innerHTML = '<p class="empty-scroll">Aucun procès enregistré.</p>'; return; }
+    document.getElementById('trialsContent').innerHTML = `
+      <table class="parchment-table">
+        <thead><tr><th>#</th><th>Accusé</th><th>Accusateur</th><th>Chef d'accusation</th><th>Verdict</th><th>Date</th></tr></thead>
+        <tbody>${data.map(t => {
+          const vbadge = t.verdict === 'coupable' ? 'badge-coupable' : t.verdict === 'innocent' ? 'badge-innocent' : 'badge-open';
+          const vlabel = t.verdict || 'En cours';
+          const date = new Date(t.created_at).toLocaleDateString('fr-FR');
+          return `<tr>
+            <td style="font-family:'Cinzel',serif;color:var(--gold-bright)">#${t.id}</td>
+            <td>${t.accused_id}</td>
+            <td>${t.accuser_id}</td>
+            <td style="font-style:italic">${t.reason}</td>
+            <td><span class="badge ${vbadge}">${vlabel}</span></td>
+            <td style="font-family:'Cinzel',serif;font-size:0.8rem">${date}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>`;
+  }
+
+  async function loadQuests() {
+    if (!currentGuildId) return;
+    const data = await apiFetch(`/api/quests/${currentGuildId}`).catch(() => []);
+    if (!data.length) { document.getElementById('questsContent').innerHTML = '<p class="empty-scroll" style="color:var(--ink-faded)">Aucune quête disponible.</p>'; return; }
+    document.getElementById('questsContent').innerHTML = data.map(q => {
+      const rewards = [];
+      if (q.reward_rep) rewards.push(`⚖️ ${q.reward_rep} rép`);
+      if (q.reward_gold) rewards.push(`🪙 ${q.reward_gold} or`);
+      if (q.reward_badge) rewards.push(q.reward_badge);
+      return `<div class="quest-card">
+        <div class="quest-title">${q.title}</div>
+        <div class="quest-desc">${q.description}</div>
+        <div class="quest-rewards">${rewards.map(r => `<span class="reward-chip">${r}</span>`).join('')}</div>
+      </div>`;
+    }).join('');
+  }
+
+  async function loadGuildes() {
+    if (!currentGuildId) return;
+    const data = await apiFetch(`/api/guildes/${currentGuildId}`).catch(() => []);
+    if (!data.length) { document.getElementById('guildesContent').innerHTML = '<p class="empty-scroll" style="color:var(--ink-faded)">Aucune guilde fondée.</p>'; return; }
+    document.getElementById('guildesContent').innerHTML = data.map(g => `
+      <div class="guilde-card">
+        <span class="guilde-emblem">${g.emblem || '⚔️'}</span>
+        <div class="guilde-name">${g.name}</div>
+        <div class="guilde-desc">${g.description || 'Guilde mystérieuse...'}</div>
+        <div class="guilde-members">⚔️ ${g.members ? g.members.length : 0} membre(s)</div>
+      </div>`).join('');
+  }
+
+  async function loadBounties() {
+    if (!currentGuildId) return;
+    const data = await apiFetch(`/api/bounties/${currentGuildId}`).catch(() => []);
+    if (!data.length) { document.getElementById('bountiesContent').innerHTML = '<p class="empty-scroll" style="color:var(--ink-faded)">Aucun avis de recherche actif.</p>'; return; }
+    document.getElementById('bountiesContent').innerHTML = data.map(b => `
+      <div class="bounty-card">
+        <div class="bounty-amount">🪙 ${b.amount}</div>
+        <div>
+          <div class="bounty-target">🎯 Cible : ${b.target_id}</div>
+          <div class="bounty-reason">${b.reason || 'Raison non précisée'}</div>
         </div>
-    </section>
+      </div>`).join('');
+  }
 
-    <footer>
-        <p>PLAID © 2025 — La justice n'attend pas.</p>
-    </footer>
+  async function loadLaws() {
+    if (!currentGuildId) return;
+    const data = await apiFetch(`/api/laws/${currentGuildId}`).catch(() => []);
+    if (!data.length) { document.getElementById('lawsContent').innerHTML = '<p class="empty-scroll">Aucune loi promulguée.</p>'; return; }
+    document.getElementById('lawsContent').innerHTML = `
+      <table class="parchment-table">
+        <thead><tr><th>Article</th><th>Loi</th><th>Description</th><th>Peine</th></tr></thead>
+        <tbody>${data.map(l => `<tr>
+          <td style="font-family:'Cinzel Decorative',serif;color:var(--gold-bright)">${l.id}</td>
+          <td style="font-family:'Cinzel',serif;font-weight:700">${l.name}</td>
+          <td style="font-style:italic">${l.description}</td>
+          <td>${l.penalty || '—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+  }
 
-    <script src="js/app.js"></script>
+  document.getElementById('guildId').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loadAll();
+  });
+</script>
 </body>
 </html>
