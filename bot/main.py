@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
-from discord import app_commands
 import os
 from dotenv import load_dotenv
+from utils.db import init_db
 
 load_dotenv()
 
@@ -14,13 +14,21 @@ class PlaidBot(commands.Bot):
         super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
-        from utils.db import init_db
         await init_db()
-        await self.load_extension("cogs.tribunal")
-        await self.load_extension("cogs.reputation")
-        await self.load_extension("cogs.casier")
-        await self.load_extension("cogs.lois")
-        await self.load_extension("cogs.leaderboard")
+        cogs = [
+            "cogs.tribunal",
+            "cogs.reputation",
+            "cogs.casier",
+            "cogs.lois",
+            "cogs.leaderboard",
+            "cogs.prime",
+            "cogs.guildes",
+            "cogs.quetes",
+            "cogs.serment",
+            "cogs.rehabilitation",
+        ]
+        for cog in cogs:
+            await self.load_extension(cog)
         await self.tree.sync()
         print("✅ Commandes synchronisées")
 
