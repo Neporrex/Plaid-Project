@@ -1,77 +1,120 @@
 import asyncpg
 import os
 
-pool = None
+_pool = None
+
+async def get_pool():
+    global _pool
+    if _pool is None:
+        _pool = await asyncpg.create_pool(os.getenv("DATABASE_URL"))
+    return _pool
 
 async def init_db():
-    global pool
-    pool = await asyncpg.create_pool(os.getenv("DATABASE_URL"))
-    
-    async with pool.acquire() as conn:
+    global _pool
+    _pool = await asyncpg.create_pool(os.getenv("DATABASE_URL"))
+    async with _pool.acquire() as conn:
         await conn.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
-                discord_id BIGINT NOT NULL,
                 guild_id BIGINT NOT NULL,
-                reputation INT DEFAULT 100,
-                total_trials INT DEFAULT 0,
-                guilty_count INT DEFAULT 0,
-                innocent_count INT DEFAULT 0,
-                created_at TIMESTAMP DEFAULT NOW(),
-                UNIQUE(discord_id, guild_id)
+                discord_id BIGINT NOT NULL,
+                reputation INTEGER DEFAULT 100,
+                total_trials INTEGER DEFAULT 0,
+                wins INTEGER DEFAULT 0,
+                losses INTEGER DEFAULT 0,
+                gold INTEGER DEFAULT 0,
+                badges TEXT[] DEFAULT '{}',
+                title TEXT DEFAULT 'Citoyen',
+                guild_name TEXT,
+                UNIQUE(guild_id, discord_id)
             );
-            
+
             CREATE TABLE IF NOT EXISTS trials (
                 id SERIAL PRIMARY KEY,
                 guild_id BIGINT NOT NULL,
-                accuser_id BIGINT NOT NULL,
                 accused_id BIGINT NOT NULL,
+                accuser_id BIGINT NOT NULL,
                 reason TEXT NOT NULL,
-                law_id INT,
-                status TEXT DEFAULT 'en_cours',
-                votes_guilty INT DEFAULT 0,
-                votes_innocent INT DEFAULT 0,
                 verdict TEXT,
-                channel_id BIGINT,
-                message_id BIGINT,
+                votes_guilty INTEGER DEFAULT 0,
+                votes_innocent INTEGER DEFAULT 0,
+                status TEXT DEFAULT 'pending',
                 created_at TIMESTAMP DEFAULT NOW(),
                 ended_at TIMESTAMP
             );
-            
+
             CREATE TABLE IF NOT EXISTS casier (
                 id SERIAL PRIMARY KEY,
-                discord_id BIGINT NOT NULL,
                 guild_id BIGINT NOT NULL,
-                trial_id INT REFERENCES trials(id),
-                offense TEXT NOT NULL,
-                punishment TEXT,
-                rep_change INT DEFAULT 0,
+                discord_id BIGINT NOT NULL,
+                infraction TEXT NOT NULL,
+                verdict TEXT,
                 created_at TIMESTAMP DEFAULT NOW()
             );
-            
+
             CREATE TABLE IF NOT EXISTS laws (
                 id SERIAL PRIMARY KEY,
                 guild_id BIGINT NOT NULL,
                 name TEXT NOT NULL,
-                description TEXT,
-                punishment TEXT,
-                rep_penalty INT DEFAULT 10,
-                created_by BIGINT NOT NULL,
+                description TEXT NOT NULL,
+                penalty TEXT,
                 created_at TIMESTAMP DEFAULT NOW()
             );
-            
-            CREATE TABLE IF NOT EXISTS votes (
+
+            CREATE TABLE IF NOT EXISTS bounties (
                 id SERIAL PRIMARY KEY,
-                trial_id INT REFERENCES trials(id),
-                voter_id BIGINT NOT NULL,
-                vote TEXT NOT NULL,
+                guild_id BIGINT NOT NULL,
+                target_id BIGINT NOT NULL,
+                issuer_id BIGINT NOT NULL,
+                amount INTEGER NOT NULL,
+                reason TEXT,
+                active BOOLEAN DEFAULT TRUE,
+                created_at TIMESTAMP DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS guilds_rpg (
+                id SERIAL PRIMARY KEY,
+                guild_id BIGINT NOT NULL,
+                name TEXT NOT NULL,
+                description TEXT,
+                leader_id BIGINT NOT NULL,
+                members BIGINT[] DEFAULT '{}',
+                emblem TEXT DEFAULT '⚔️',
+                reputation INTEGER DEFAULT 0,
                 created_at TIMESTAMP DEFAULT NOW(),
-                UNIQUE(trial_id, voter_id)
+                UNIQUE(guild_id, name)
+            );
+
+            CREATE TABLE IF NOT EXISTS quests (
+                id SERIAL PRIMARY KEY,
+                guild_id BIGINT NOT NULL,
+                title TEXT NOT NULL,
+                description TEXT NOT NULL,
+                reward_rep INTEGER DEFAULT 0,
+                reward_gold INTEGER DEFAULT 0,
+                reward_badge TEXT,
+                reward_role_id BIGINT,
+                created_by BIGINT NOT NULL,
+                active BOOLEAN DEFAULT TRUE,
+                created_at TIMESTAMP DEFAULT NOW()
+            );
+
+            CREATE TABLE IF NOT EXISTS quest_completions (
+                id SERIAL PRIMARY KEY,
+                quest_id INTEGER REFERENCES quests(id),
+                guild_id BIGINT NOT NULL,
+                discord_id BIGINT NOT NULL,
+                completed_at TIMESTAMP DEFAULT NOW(),
+                validated_by BIGINT,
+                UNIQUE(quest_id, discord_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS oaths (
+                id SERIAL PRIMARY KEY,
+                guild_id BIGINT NOT NULL,
+                discord_id BIGINT NOT NULL,
+                oath_text TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT NOW()
             );
         """)
     print("✅ Base de données initialisée")
-
-async def get_pool():
-    if pool is None:
-        await init_db()
-    return pool
