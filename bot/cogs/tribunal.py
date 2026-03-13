@@ -63,10 +63,6 @@ class Tribunal(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_load(self):
-        from utils.db import init_db
-        await init_db()
-
     @app_commands.command(name="accuser", description="⚖️ Ouvrir un procès contre quelqu'un")
     @app_commands.describe(
         accusé="La personne à juger",
