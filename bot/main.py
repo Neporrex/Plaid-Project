@@ -14,6 +14,8 @@ class PlaidBot(commands.Bot):
         super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
+        from utils.db import init_db
+        await init_db()
         await self.load_extension("cogs.tribunal")
         await self.load_extension("cogs.reputation")
         await self.load_extension("cogs.casier")
@@ -24,12 +26,6 @@ class PlaidBot(commands.Bot):
 
     async def on_ready(self):
         print(f"⚖️ PLAID connecté en tant que {self.user}")
-        await self.change_presence(
-            activity=discord.Activity(
-                type=discord.ActivityType.watching,
-                name="⚖️ La justice"
-            )
-        )
 
 bot = PlaidBot()
 bot.run(os.getenv("DISCORD_TOKEN"))
