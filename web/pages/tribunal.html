@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLAID — Procès</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        .page-content { padding: 8rem 4rem 4rem; max-width: 1000px; margin: 0 auto; }
+        .search-bar { width: 100%; padding: 1rem; background: var(--card); border: 1px solid rgba(88,101,242,0.2); border-radius: 10px; color: white; font-size: 1rem; margin-top: 1rem; }
+        .trials-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem; }
+        .trial-card { background: var(--card); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--accent); }
+        .trial-card.guilty { border-left-color: #FF0000; }
+        .trial-card.innocent { border-left-color: #00FF00; }
+        .trial-header { display: flex; justify-content: space-between; margin-bottom: 0.8rem; }
+        .trial-id { color: var(--accent); font-weight: 700; }
+        .trial-status { padding: 0.3rem 0.8rem; border-radius: 6px; font-size: 0.85rem; }
+        .trial-status.en_cours { background: rgba(255, 165, 0, 0.2); color: orange; }
+        .trial-status.termine { background: rgba(88, 101, 242, 0.2); color: var(--accent); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="logo">⚖️</span>
+            <span class="brand-name">PLAID</span>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">Accueil</a>
+            <a href="leaderboard.html">Classement</a>
+            <a href="tribunal.html">Procès</a>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <h1>⚖️ Procès récents</h1>
+        <input type="text" class="search-bar" id="guild-input" placeholder="ID du serveur Discord...">
+        <div class="trials-list" id="trials-list">
+            <p style="color: var(--text2);">Entre un ID de serveur ci-dessus</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://plaid-api.onrender.com";
+        async function loadTrials() {
+            const guildId = document.getElementById('guild-input').value;
+            if (!guildId) return;
+            try {
+                const res = await fetch(`${API_URL}/api/trials/${guildId}`);
+                const data = await res.json();
+                const list = document.getElementById('trials-list');
+                list.innerHTML = data.map(t => `
+                    <div class="trial-card ${t.verdict || ''}">
+                        <div class="trial-header">
+                            <span class="trial-id">Procès #${t.id}</span>
+                            <span class="trial-status ${t.status}">${t.status}</span>
+                        </div>
+                        <p><strong>Accusateur:</strong> ${t.accuser_id} → <strong>Accusé:</strong> ${t.accused_id}</p>
+                        <p style="color: var(--text2); margin-top: 0.5rem;">${t.reason}</p>
+                        <p style="margin-top: 0.5rem;">🔴 ${t.votes_guilty} coupable | 🟢 ${t.votes_innocent} innocent ${t.verdict ? '→ <strong>' + t.verdict.toUpperCase() + '</strong>' : ''}</p>
+                    </div>
+                `).join('') || '<p style="color: var(--text2);">Aucun procès</p>';
+            } catch(e) { console.error(e); }
+        }
+        document.getElementById('guild-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loadTrials();
+        });
+    </script>
+</body>
+</html>

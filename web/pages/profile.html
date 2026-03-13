@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLAID — Profil</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        .page-content { padding: 8rem 4rem 4rem; max-width: 800px; margin: 0 auto; }
+        .search-row { display: flex; gap: 1rem; margin-top: 1rem; }
+        .search-bar { flex: 1; padding: 1rem; background: var(--card); border: 1px solid rgba(88,101,242,0.2); border-radius: 10px; color: white; font-size: 1rem; }
+        .profile-card { background: var(--card); padding: 2rem; border-radius: 16px; margin-top: 2rem; border: 1px solid rgba(88,101,242,0.2); }
+        .rep-bar { height: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; margin-top: 0.5rem; overflow: hidden; }
+        .rep-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 6px; transition: width 0.5s; }
+        .casier-item { background: rgba(255,0,0,0.1); padding: 1rem; border-radius: 8px; margin-top: 0.8rem; border-left: 3px solid #FF6B6B; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="logo">⚖️</span>
+            <span class="brand-name">PLAID</span>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">Accueil</a>
+            <a href="leaderboard.html">Classement</a>
+            <a href="tribunal.html">Procès</a>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <h1>👤 Profil</h1>
+        <div class="search-row">
+            <input type="text" class="search-bar" id="guild-input" placeholder="ID du serveur">
+            <input type="text" class="search-bar" id="user-input" placeholder="ID Discord du membre">
+        </div>
+        <div id="profile-container"></div>
+    </div>
+
+    <script>
+        const API_URL = "https://plaid-api.onrender.com";
+        function getRank(rep) {
+            if (rep >= 180) return "👑 Légende";
+            if (rep >= 150) return "⭐ Exemplaire";
+            if (rep >= 120) return "✅ Bon citoyen";
+            if (rep >= 80) return "😐 Neutre";
+            if (rep >= 50) return "⚠️ Suspect";
+            if (rep >= 20) return "🔴 Criminel";
+            return "💀 Paria";
+        }
+        async function loadProfile() {
+            const guildId = document.getElementById('guild-input').value;
+            const userId = document.getElementById('user-input').value;
+            if (!guildId || !userId) return;
+            try {
+                const res = await fetch(`${API_URL}/api/user/${guildId}/${userId}`);
+                const data = await res.json();
+                if (data.error) {
+                    document.getElementById('profile-container').innerHTML = '<p style="color: var(--text2); margin-top: 2rem;">Utilisateur introuvable</p>';
+                    return;
+                }
+                const u = data.user;
+                const repPercent = Math.min((u.reputation / 200) * 100, 100);
+                let html = `
+                    <div class="profile-card">
+                        <h2>${u.discord_id}</h2>
+                        <p style="color: var(--accent); font-size: 1.2rem;">${getRank(u.reputation)}</p>
+                        <p style="margin-top: 1rem; color: var(--text2);">Réputation: ${u.reputation}/200</p>
+                        <div class="rep-bar"><div class="rep-fill" style="width: ${repPercent}%"></div></div>
+                        <div style="display: flex; gap: 2rem; margin-top: 1.5rem;">
+                            <p>⚖️ Procès: ${u.total_trials}</p>
+                            <p>🔴 Coupable: ${u.guilty_count}</p>
+                            <p>🟢 Innocent: ${u.innocent_count}</p>
+                        </div>
+                    </div>
+                `;
+                if (data.casier.length > 0) {
+                    html += '<h3 style="margin-top: 2rem;">📜 Casier judiciaire</h3>';
+                    data.casier.forEach(c => {
+                        html += `<div class="casier-item"><p><strong>${c.offense}</strong></p><p style="color: var(--text2); font-size: 0.9rem;">${c.punishment} | ${c.rep_change > 0 ? '+' : ''}${c.rep_change} rep</p></div>`;
+                    });
+                }
+                document.getElementById('profile-container').innerHTML = html;
+            } catch(e) { console.error(e); }
+        }
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loadProfile();
+        });
+    </script>
+</body>
+</html>

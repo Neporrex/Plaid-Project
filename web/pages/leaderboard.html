@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLAID — Classement</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        .page-content { padding: 8rem 4rem 4rem; max-width: 900px; margin: 0 auto; }
+        .leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+        .leaderboard-table th { text-align: left; padding: 1rem; color: var(--text2); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .leaderboard-table td { padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .leaderboard-table tr:hover { background: rgba(88, 101, 242, 0.1); }
+        .search-bar { width: 100%; padding: 1rem; background: var(--card); border: 1px solid rgba(88,101,242,0.2); border-radius: 10px; color: white; font-size: 1rem; margin-top: 1rem; }
+        .search-bar::placeholder { color: var(--text2); }
+        .filter-btns { display: flex; gap: 1rem; margin-top: 1rem; }
+        .filter-btn { padding: 0.5rem 1.5rem; border-radius: 8px; border: 1px solid rgba(88,101,242,0.3); background: transparent; color: var(--text); cursor: pointer; }
+        .filter-btn.active { background: var(--accent); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="logo">⚖️</span>
+            <span class="brand-name">PLAID</span>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">Accueil</a>
+            <a href="leaderboard.html">Classement</a>
+            <a href="tribunal.html">Procès</a>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <h1>🏆 Classement</h1>
+        <p style="color: var(--text2); margin-top: 0.5rem;">Entre un ID de serveur pour voir le classement</p>
+        <input type="text" class="search-bar" id="guild-input" placeholder="ID du serveur Discord...">
+        <div class="filter-btns">
+            <button class="filter-btn active" onclick="loadLeaderboard('best', this)">🏅 Meilleurs</button>
+            <button class="filter-btn" onclick="loadLeaderboard('worst', this)">💀 Pires</button>
+            <button class="filter-btn" onclick="loadLeaderboard('trials', this)">⚖️ Plus jugés</button>
+        </div>
+        <table class="leaderboard-table">
+            <thead>
+                <tr><th>#</th><th>Utilisateur</th><th>Réputation</th><th>Procès</th></tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <tr><td colspan="4" style="color: var(--text2);">Entre un ID de serveur ci-dessus</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_URL = "https://plaid-api.onrender.com";
+        async function loadLeaderboard(sort, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            const guildId = document.getElementById('guild-input').value;
+            if (!guildId) return;
+            try {
+                const res = await fetch(`${API_URL}/api/leaderboard/${guildId}?sort=${sort}`);
+                const data = await res.json();
+                const tbody = document.getElementById('leaderboard-body');
+                const medals = ['🥇', '🥈', '🥉'];
+                tbody.innerHTML = data.map((u, i) => `
+                    <tr>
+                        <td>${medals[i] || i + 1}</td>
+                        <td>${u.discord_id}</td>
+                        <td>${u.reputation}</td>
+                        <td>${u.total_trials}</td>
+                    </tr>
+                `).join('') || '<tr><td colspan="4">Aucune donnée</td></tr>';
+            } catch(e) { console.error(e); }
+        }
+        document.getElementById('guild-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loadLeaderboard('best', document.querySelector('.filter-btn.active'));
+        });
+    </script>
+</body>
+</html>
