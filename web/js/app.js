@@ -1,4 +1,4 @@
-const API_URL = "https://plaid-api.onrender.com";
+const API_URL = "https://plaid-api-6ddd.onrender.com/";
 
 async function loadStats() {
     try {
