@@ -4,673 +4,532 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PLAID — Tribunal du Royaume</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --parchment: #f2e8c9;
-    --parchment-dark: #e0cc9a;
-    --parchment-deep: #c9a96e;
-    --ink: #2a1a08;
-    --ink-light: #5a3a1a;
-    --ink-faded: #8b6340;
-    --blood: #8b0000;
-    --blood-bright: #c0392b;
-    --gold: #b8860b;
-    --gold-bright: #d4a017;
-    --gold-shine: #f0c040;
-    --emerald: #1a5c2a;
-    --royal: #1a2a5c;
-    --shadow: rgba(42, 26, 8, 0.4);
-    --glow: rgba(212, 160, 23, 0.3);
-  }
+:root {
+  --sky:        #e8f4fc;
+  --sky-mid:    #c5e3f5;
+  --sky-deep:   #7ab8d9;
+  --cloud:      #ffffff;
+  --ink:        #1a2a3a;
+  --ink-soft:   #3a5068;
+  --ink-muted:  #6a8a9a;
+  --gold:       #c8a030;
+  --gold-light: #e8c060;
+  --gold-soft:  #f5e8c0;
+  --rainbow-1:  #e84040;
+  --rainbow-2:  #e88020;
+  --rainbow-3:  #50b840;
+  --rainbow-4:  #3090d8;
+  --rainbow-5:  #8050d0;
+  --card-bg:    rgba(255,255,255,0.85);
+  --card-border:rgba(122,184,217,0.4);
+  --shadow:     0 4px 24px rgba(26,42,58,0.10);
+  --shadow-lg:  0 8px 40px rgba(26,42,58,0.15);
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
-  body {
-    background: #0d0a05;
-    color: var(--ink);
-    font-family: 'IM Fell English', serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-    background-image:
-      radial-gradient(ellipse at 20% 50%, rgba(139, 0, 0, 0.06) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, rgba(184, 134, 11, 0.06) 0%, transparent 60%);
-  }
+body {
+  background: linear-gradient(160deg, #daeef8 0%, #f0f8ff 40%, #f7f2e8 100%);
+  color: var(--ink);
+  font-family: 'Lora', serif;
+  min-height: 100vh;
+}
 
-  /* TEXTURE DE FOND */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-  }
+/* ── HEADER ── */
+header {
+  background: linear-gradient(135deg, #1a3a5c 0%, #0f2540 60%, #1a1a3a 100%);
+  padding: 40px 20px 36px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
 
-  /* HEADER */
-  header {
-    position: relative;
-    text-align: center;
-    padding: 50px 20px 40px;
-    background: linear-gradient(180deg, #1a0e02 0%, #0d0a05 100%);
-    border-bottom: 3px solid var(--gold);
-    overflow: hidden;
-  }
+/* Arcs-en-ciel décoratifs */
+header::before {
+  content: '';
+  position: absolute;
+  top: -60px; left: -80px;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  border: 28px solid transparent;
+  border-top-color: rgba(232,64,64,0.25);
+  border-right-color: rgba(232,128,32,0.2);
+  pointer-events: none;
+}
+header::after {
+  content: '';
+  position: absolute;
+  top: -80px; right: -60px;
+  width: 360px; height: 360px;
+  border-radius: 50%;
+  border: 22px solid transparent;
+  border-top-color: rgba(80,184,64,0.2);
+  border-left-color: rgba(48,144,216,0.2);
+  pointer-events: none;
+}
 
-  header::before, header::after {
-    content: '✦ ⚖️ ✦';
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.5rem;
-    color: var(--gold);
-    opacity: 0.5;
-  }
-  header::before { left: 40px; }
-  header::after { right: 40px; }
+.logo-wrap {
+  width: 80px; height: 80px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.4rem;
+  box-shadow: 0 0 0 4px rgba(200,160,48,0.3), 0 0 30px rgba(200,160,48,0.4);
+}
 
-  .header-seal {
-    width: 90px;
-    height: 90px;
-    background: radial-gradient(circle, var(--gold-bright), var(--gold));
-    border-radius: 50%;
-    margin: 0 auto 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.8rem;
-    box-shadow: 0 0 30px var(--glow), 0 0 60px rgba(212,160,23,0.15), inset 0 2px 4px rgba(255,255,255,0.3);
-    border: 3px solid var(--gold-shine);
-    animation: sealPulse 3s ease-in-out infinite;
-  }
+h1 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.3em;
+  text-shadow: 0 2px 12px rgba(200,160,48,0.4);
+  margin-bottom: 6px;
+}
 
-  @keyframes sealPulse {
-    0%, 100% { box-shadow: 0 0 30px var(--glow), 0 0 60px rgba(212,160,23,0.15); }
-    50% { box-shadow: 0 0 50px rgba(212,160,23,0.6), 0 0 90px rgba(212,160,23,0.25); }
-  }
+.header-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  color: var(--sky-mid);
+  text-transform: uppercase;
+  opacity: 0.85;
+}
 
-  h1 {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 900;
-    color: var(--gold-bright);
-    text-shadow: 0 0 20px var(--glow), 2px 2px 0 var(--ink);
-    letter-spacing: 0.15em;
-    margin-bottom: 8px;
-  }
+/* ── RAINBOW DIVIDER ── */
+.rainbow-bar {
+  height: 4px;
+  background: linear-gradient(90deg,
+    var(--rainbow-1) 0%,
+    var(--rainbow-2) 20%,
+    #f0d020 40%,
+    var(--rainbow-3) 55%,
+    var(--rainbow-4) 75%,
+    var(--rainbow-5) 100%
+  );
+}
 
-  .subtitle {
-    font-family: 'Cinzel', serif;
-    font-size: 1rem;
-    color: var(--parchment-deep);
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    opacity: 0.8;
-  }
+/* ── GUILD INPUT ── */
+.search-wrap {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 28px 20px 20px;
+  flex-wrap: wrap;
+}
 
-  /* GUILD ID INPUT */
-  .guild-section {
-    display: flex;
-    justify-content: center;
-    padding: 30px 20px;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
+.search-wrap input {
+  font-family: 'Lora', serif;
+  font-size: 0.95rem;
+  padding: 11px 18px;
+  width: 280px;
+  background: var(--cloud);
+  border: 2px solid var(--sky-deep);
+  border-radius: 8px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow);
+}
+.search-wrap input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(200,160,48,0.15);
+}
+.search-wrap input::placeholder { color: var(--ink-muted); }
 
-  .guild-section input {
-    font-family: 'Cinzel', serif;
-    font-size: 1rem;
-    padding: 12px 20px;
-    width: 280px;
-    background: #1a1005;
-    border: 2px solid var(--gold);
-    color: var(--parchment);
-    border-radius: 4px;
-    outline: none;
-    letter-spacing: 0.05em;
-    transition: border-color 0.3s, box-shadow 0.3s;
-  }
+.btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 11px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: all 0.2s;
+}
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: #1a2a3a;
+  box-shadow: 0 3px 12px rgba(200,160,48,0.35);
+}
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,160,48,0.45); }
 
-  .guild-section input::placeholder { color: var(--ink-faded); }
-  .guild-section input:focus {
-    border-color: var(--gold-shine);
-    box-shadow: 0 0 15px var(--glow);
-  }
+.btn-sky {
+  background: var(--sky-deep);
+  color: white;
+  font-size: 0.8rem;
+  padding: 8px 16px;
+}
+.btn-sky:hover { background: #5a9ac0; }
 
-  .btn-primary {
-    font-family: 'Cinzel', serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    padding: 12px 28px;
-    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
-    color: var(--ink);
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    transition: all 0.3s;
-    box-shadow: 0 4px 15px rgba(184,134,11,0.4);
-  }
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+  border-bottom: 2px solid var(--sky-mid);
+  flex-wrap: wrap;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(6px);
+}
 
-  .btn-primary:hover {
-    background: linear-gradient(135deg, var(--gold-shine), var(--gold));
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(212,160,23,0.5);
-  }
+.tab-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 13px 18px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}
+.tab-btn:hover { color: var(--gold); }
+.tab-btn.active { color: var(--ink); border-bottom-color: var(--gold); }
 
-  /* NAV TABS */
-  .nav-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 0;
-    padding: 0 20px;
-    border-bottom: 2px solid var(--gold);
-    flex-wrap: wrap;
-  }
+/* ── MAIN ── */
+main { max-width: 1100px; margin: 0 auto; padding: 32px 20px 60px; }
 
-  .tab-btn {
-    font-family: 'Cinzel', serif;
-    font-size: 0.85rem;
-    font-weight: 600;
-    padding: 14px 22px;
-    background: transparent;
-    color: var(--ink-faded);
-    border: none;
-    cursor: pointer;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px;
-    transition: all 0.3s;
-    position: relative;
-  }
+.tab-pane { display:none; animation: fadeUp 0.35s ease; }
+.tab-pane.active { display:block; }
 
-  .tab-btn:hover { color: var(--gold-bright); }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
 
-  .tab-btn.active {
-    color: var(--gold-shine);
-    border-bottom-color: var(--gold-shine);
-  }
+/* ── CARDS ── */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(4px);
+}
 
-  /* MAIN CONTENT */
-  main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 20px;
-  }
+.card + .card { margin-top: 20px; }
 
-  .tab-content { display: none; animation: fadeIn 0.5s ease; }
-  .tab-content.active { display: block; }
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--sky-deep), transparent);
+  opacity: 0.5;
+}
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+/* ── STAT GRID ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
 
-  /* PARCHEMIN CARD */
-  .parchment-card {
-    background: linear-gradient(145deg, var(--parchment) 0%, var(--parchment-dark) 40%, #d4bc8a 100%);
-    border-radius: 4px;
-    padding: 30px;
-    position: relative;
-    box-shadow:
-      0 10px 40px rgba(0,0,0,0.6),
-      inset 0 1px 0 rgba(255,255,255,0.4),
-      inset 0 -1px 0 rgba(0,0,0,0.1);
-    overflow: hidden;
-  }
+.stat-tile {
+  background: var(--cloud);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 20px 14px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow);
+}
+.stat-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
 
-  .parchment-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
-    pointer-events: none;
-  }
+.stat-icon { font-size: 1.8rem; display: block; margin-bottom: 6px; }
+.stat-val {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
 
-  .card-border {
-    position: absolute;
-    inset: 6px;
-    border: 2px solid rgba(101, 67, 33, 0.4);
-    border-radius: 2px;
-    pointer-events: none;
-  }
+/* ── TABLE ── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.data-table th {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--sky-mid);
+  text-align: left;
+}
+.data-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid rgba(122,184,217,0.2);
+  color: var(--ink-soft);
+  vertical-align: middle;
+}
+.data-table tr:hover td { background: rgba(122,184,217,0.06); }
+.data-table tr:last-child td { border-bottom: none; }
 
-  .card-corner {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    border-color: var(--gold);
-    border-style: solid;
-    opacity: 0.7;
-  }
-  .card-corner.tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
-  .card-corner.tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
-  .card-corner.bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
-  .card-corner.br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
+/* ── BADGES ── */
+.badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.badge-guilty   { background:#fdecea; color:#c0392b; border:1px solid #e8a0a0; }
+.badge-innocent { background:#eafaf1; color:#27ae60; border:1px solid #90d8a8; }
+.badge-open     { background:#fef9e7; color:#d4a017; border:1px solid #e8d080; }
 
-  /* STATS GRID */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-  }
+/* ── REP BAR ── */
+.rep-wrap { display:flex; align-items:center; gap:8px; }
+.rep-track {
+  flex: 1; height: 7px;
+  background: var(--sky-mid);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.rep-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sky-deep), var(--gold));
+  border-radius: 4px;
+  transition: width 0.8s ease;
+}
+.rep-num {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  color: var(--gold);
+  min-width: 32px;
+}
 
-  .stat-card {
-    background: linear-gradient(145deg, #1a1005, #0f0a03);
-    border: 1px solid var(--gold);
-    border-radius: 4px;
-    padding: 24px 20px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
+/* ── QUEST GRID ── */
+.quest-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.quest-card {
+  background: var(--cloud);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s;
+}
+.quest-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.quest-title { font-family:'Cinzel',serif; font-size:0.95rem; font-weight:700; color:var(--ink); margin-bottom:6px; }
+.quest-desc  { font-size:0.85rem; color:var(--ink-soft); font-style:italic; margin-bottom:12px; line-height:1.5; }
+.quest-rewards { display:flex; flex-wrap:wrap; gap:6px; }
+.reward-chip {
+  background: var(--gold-soft);
+  border: 1px solid var(--gold-light);
+  color: var(--ink-soft);
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size:0.78rem;
+  font-family:'Cinzel',serif;
+}
 
-  .stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 20px var(--glow);
-  }
+/* ── GUILDES ── */
+.guildes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.guilde-card {
+  background: var(--cloud);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 22px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s;
+}
+.guilde-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.guilde-emblem { font-size:2.5rem; display:block; margin-bottom:8px; }
+.guilde-name { font-family:'Cinzel Decorative',serif; font-size:0.9rem; color:var(--ink); margin-bottom:4px; }
+.guilde-desc { font-size:0.82rem; color:var(--ink-muted); font-style:italic; margin-bottom:10px; }
+.guilde-members { font-family:'Cinzel',serif; font-size:0.7rem; color:var(--sky-deep); letter-spacing:0.1em; }
 
-  .stat-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
-  }
+/* ── BOUNTY ── */
+.bounty-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 18px;
+  background: var(--cloud);
+  border: 1px solid rgba(200,80,80,0.2);
+  border-left: 4px solid var(--rainbow-1);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: transform 0.2s;
+}
+.bounty-item:hover { transform: translateX(4px); }
+.bounty-gold { font-family:'Cinzel Decorative',serif; font-size:1.3rem; color:var(--gold); white-space:nowrap; }
+.bounty-target { font-family:'Cinzel',serif; font-size:0.9rem; color:var(--ink); }
+.bounty-reason { font-size:0.8rem; color:var(--ink-muted); font-style:italic; }
 
-  .stat-icon { font-size: 2.2rem; margin-bottom: 8px; display: block; }
-  .stat-value {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--gold-shine);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .stat-label {
-    font-family: 'Cinzel', serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--ink-faded);
-  }
+/* ── MEDALS ── */
+.m1 { color:#d4a017; font-size:1.2rem; }
+.m2 { color:#9aa0a6; font-size:1.2rem; }
+.m3 { color:#b06020; font-size:1.2rem; }
+.mn { font-family:'Cinzel',serif; font-size:0.85rem; color:var(--ink-muted); }
 
-  /* SECTION TITLE */
-  .section-title {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 1.4rem;
-    color: var(--ink);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+/* ── TABS LEADERBOARD ── */
+.sub-tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
 
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--gold), transparent);
-  }
+/* ── EMPTY / LOADING ── */
+.empty { text-align:center; padding:40px 20px; color:var(--ink-muted); font-style:italic; }
+.empty::before { content:'📜'; font-size:2.5rem; display:block; margin-bottom:12px; opacity:0.4; }
 
-  /* TABLE PARCHEMIN */
-  .parchment-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-  }
+.loading { text-align:center; padding:40px; color:var(--ink-muted); }
 
-  .parchment-table th {
-    font-family: 'Cinzel', serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--ink-light);
-    padding: 12px 16px;
-    border-bottom: 2px solid var(--parchment-deep);
-    text-align: left;
-  }
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  padding: 24px;
+  font-family:'Cinzel',serif;
+  font-size:0.7rem;
+  letter-spacing:0.2em;
+  color: var(--ink-muted);
+  border-top: 1px solid var(--sky-mid);
+}
 
-  .parchment-table td {
-    padding: 14px 16px;
-    border-bottom: 1px solid rgba(101, 67, 33, 0.2);
-    color: var(--ink);
-    vertical-align: middle;
-  }
+/* ── RESPONSIVE ── */
+@media(max-width:600px) {
+  .tab-btn { padding:10px 12px; font-size:0.7rem; }
+  .stat-grid { grid-template-columns: repeat(3, 1fr); }
+}
 
-  .parchment-table tr:hover td { background: rgba(180, 140, 40, 0.1); }
-  .parchment-table tr:last-child td { border-bottom: none; }
-
-  /* BADGES */
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 2px;
-    font-family: 'Cinzel', serif;
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
-  .badge-coupable { background: rgba(139,0,0,0.15); color: var(--blood-bright); border: 1px solid var(--blood); }
-  .badge-innocent { background: rgba(26,92,42,0.15); color: #27ae60; border: 1px solid #1a5c2a; }
-  .badge-open { background: rgba(184,134,11,0.15); color: var(--gold-bright); border: 1px solid var(--gold); }
-
-  /* RANK BADGE */
-  .rank-badge {
-    font-size: 0.82rem;
-    color: var(--ink-light);
-    font-style: italic;
-  }
-
-  /* LEADERBOARD MEDALS */
-  .medal-1 { color: #FFD700; font-size: 1.3rem; }
-  .medal-2 { color: #C0C0C0; font-size: 1.3rem; }
-  .medal-3 { color: #CD7F32; font-size: 1.3rem; }
-  .medal-n { color: var(--ink-faded); font-family: 'Cinzel', serif; font-size: 0.9rem; }
-
-  /* REP BAR */
-  .rep-bar-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .rep-bar {
-    flex: 1;
-    height: 8px;
-    background: rgba(101,67,33,0.2);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .rep-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--gold), var(--gold-shine));
-    border-radius: 4px;
-    transition: width 1s ease;
-  }
-  .rep-val {
-    font-family: 'Cinzel', serif;
-    font-size: 0.8rem;
-    color: var(--gold-bright);
-    min-width: 35px;
-    text-align: right;
-  }
-
-  /* QUEST CARDS */
-  .quest-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-  }
-
-  .quest-card {
-    background: linear-gradient(145deg, var(--parchment), var(--parchment-dark));
-    border: 2px solid var(--parchment-deep);
-    border-radius: 4px;
-    padding: 22px;
-    position: relative;
-    transition: transform 0.3s;
-  }
-
-  .quest-card:hover { transform: translateY(-3px); }
-
-  .quest-card::before {
-    content: '📜';
-    position: absolute;
-    top: -10px;
-    left: 20px;
-    font-size: 1.4rem;
-    background: var(--parchment);
-    padding: 0 4px;
-  }
-
-  .quest-title {
-    font-family: 'Cinzel', serif;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 8px;
-  }
-
-  .quest-desc {
-    font-size: 0.9rem;
-    color: var(--ink-light);
-    font-style: italic;
-    margin-bottom: 14px;
-    line-height: 1.5;
-  }
-
-  .quest-rewards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .reward-chip {
-    background: rgba(184,134,11,0.15);
-    border: 1px solid var(--gold);
-    color: var(--ink-light);
-    padding: 3px 10px;
-    border-radius: 2px;
-    font-size: 0.8rem;
-    font-family: 'Cinzel', serif;
-  }
-
-  /* GUILD CARDS */
-  .guildes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-  }
-
-  .guilde-card {
-    background: linear-gradient(145deg, #1a1005, #120d04);
-    border: 1px solid var(--gold);
-    border-radius: 4px;
-    padding: 24px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s;
-  }
-
-  .guilde-card:hover {
-    border-color: var(--gold-shine);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4), 0 0 15px var(--glow);
-  }
-
-  .guilde-emblem { font-size: 3rem; margin-bottom: 10px; display: block; }
-  .guilde-name {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 1rem;
-    color: var(--gold-bright);
-    margin-bottom: 6px;
-  }
-  .guilde-desc {
-    font-size: 0.85rem;
-    color: var(--ink-faded);
-    font-style: italic;
-    margin-bottom: 12px;
-  }
-  .guilde-members {
-    font-family: 'Cinzel', serif;
-    font-size: 0.75rem;
-    color: var(--parchment-deep);
-    letter-spacing: 0.1em;
-  }
-
-  /* BOUNTIES */
-  .bounty-card {
-    background: linear-gradient(135deg, rgba(139,0,0,0.1), rgba(26,8,0,0.95));
-    border: 1px solid var(--blood);
-    border-radius: 4px;
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    transition: all 0.3s;
-    margin-bottom: 12px;
-  }
-
-  .bounty-card:hover { border-color: var(--blood-bright); transform: translateX(4px); }
-  .bounty-amount {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 1.5rem;
-    color: var(--gold-shine);
-    white-space: nowrap;
-  }
-  .bounty-target { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--parchment); }
-  .bounty-reason { font-size: 0.85rem; color: var(--ink-faded); font-style: italic; }
-
-  /* LOADING / EMPTY */
-  .loading-scroll {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--ink-faded);
-    font-style: italic;
-    font-size: 1.1rem;
-  }
-
-  .empty-scroll {
-    text-align: center;
-    padding: 50px;
-    color: var(--ink-faded);
-    font-style: italic;
-  }
-
-  .empty-scroll::before { content: '📜'; font-size: 3rem; display: block; margin-bottom: 16px; opacity: 0.5; }
-
-  /* FOOTER */
-  footer {
-    text-align: center;
-    padding: 30px;
-    font-family: 'Cinzel', serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.2em;
-    color: var(--ink-faded);
-    border-top: 1px solid rgba(184,134,11,0.2);
-    margin-top: 60px;
-  }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: #0d0a05; }
-  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
-
-  @media (max-width: 600px) {
-    .tab-btn { padding: 10px 12px; font-size: 0.75rem; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  }
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:7px; }
+::-webkit-scrollbar-track { background: var(--sky); }
+::-webkit-scrollbar-thumb { background: var(--sky-deep); border-radius:4px; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-seal">⚖️</div>
+  <div class="logo-wrap">⚖️</div>
   <h1>P L A I D</h1>
-  <p class="subtitle">Tribunal du Royaume — Archives Officielles</p>
+  <p class="header-sub">Tribunal du Royaume — Archives Officielles</p>
 </header>
+<div class="rainbow-bar"></div>
 
-<div class="guild-section">
-  <input type="text" id="guildId" placeholder="ID du serveur Discord..." />
-  <button class="btn-primary" onclick="loadAll()">📜 Consulter les Archives</button>
+<div class="search-wrap">
+  <input id="guildId" type="text" placeholder="ID du serveur Discord..." />
+  <button class="btn btn-gold" onclick="loadAll()">📜 Consulter les Archives</button>
 </div>
 
-<nav class="nav-tabs">
-  <button class="tab-btn active" onclick="switchTab('overview')">⚖️ Aperçu</button>
-  <button class="tab-btn" onclick="switchTab('leaderboard')">👑 Classement</button>
-  <button class="tab-btn" onclick="switchTab('trials')">📋 Procès</button>
-  <button class="tab-btn" onclick="switchTab('quests')">📜 Quêtes</button>
-  <button class="tab-btn" onclick="switchTab('guildes')">⚔️ Guildes</button>
-  <button class="tab-btn" onclick="switchTab('bounties')">💰 Primes</button>
-  <button class="tab-btn" onclick="switchTab('laws')">📖 Lois</button>
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="overview">⚖️ Aperçu</button>
+  <button class="tab-btn" data-tab="leaderboard">👑 Classement</button>
+  <button class="tab-btn" data-tab="trials">📋 Procès</button>
+  <button class="tab-btn" data-tab="quests">📜 Quêtes</button>
+  <button class="tab-btn" data-tab="guildes">⚔️ Guildes</button>
+  <button class="tab-btn" data-tab="bounties">💰 Primes</button>
+  <button class="tab-btn" data-tab="laws">📖 Lois</button>
 </nav>
 
 <main>
 
   <!-- OVERVIEW -->
-  <div class="tab-content active" id="tab-overview">
-    <div class="stats-grid" id="statsGrid">
-      <div class="stat-card"><span class="stat-icon">⚖️</span><div class="stat-value" id="stat-users">—</div><div class="stat-label">Citoyens</div></div>
-      <div class="stat-card"><span class="stat-icon">📋</span><div class="stat-value" id="stat-trials">—</div><div class="stat-label">Procès</div></div>
-      <div class="stat-card"><span class="stat-icon">📜</span><div class="stat-value" id="stat-laws">—</div><div class="stat-label">Lois</div></div>
-      <div class="stat-card"><span class="stat-icon">🗡️</span><div class="stat-value" id="stat-quests">—</div><div class="stat-label">Quêtes actives</div></div>
-      <div class="stat-card"><span class="stat-icon">⚔️</span><div class="stat-value" id="stat-guildes">—</div><div class="stat-label">Guildes</div></div>
-      <div class="stat-card"><span class="stat-icon">💰</span><div class="stat-value" id="stat-bounties">—</div><div class="stat-label">Primes actives</div></div>
+  <div class="tab-pane active" id="pane-overview">
+    <div class="stat-grid">
+      <div class="stat-tile"><span class="stat-icon">👥</span><div class="stat-val" id="s-users">—</div><div class="stat-label">Citoyens</div></div>
+      <div class="stat-tile"><span class="stat-icon">⚖️</span><div class="stat-val" id="s-trials">—</div><div class="stat-label">Procès</div></div>
+      <div class="stat-tile"><span class="stat-icon">📖</span><div class="stat-val" id="s-laws">—</div><div class="stat-label">Lois</div></div>
+      <div class="stat-tile"><span class="stat-icon">📜</span><div class="stat-val" id="s-quests">—</div><div class="stat-label">Quêtes</div></div>
+      <div class="stat-tile"><span class="stat-icon">⚔️</span><div class="stat-val" id="s-guildes">—</div><div class="stat-label">Guildes</div></div>
+      <div class="stat-tile"><span class="stat-icon">💰</span><div class="stat-val" id="s-bounties">—</div><div class="stat-label">Primes</div></div>
     </div>
-
-    <div class="parchment-card">
-      <div class="card-border"></div>
-      <div class="card-corner tl"></div><div class="card-corner tr"></div>
-      <div class="card-corner bl"></div><div class="card-corner br"></div>
-      <h2 class="section-title">👑 Top 5 Citoyens</h2>
-      <div id="topCitizens"><p class="empty-scroll">Entrez un ID de serveur pour consulter les archives.</p></div>
+    <div class="card">
+      <div class="section-title">👑 Top 5 Citoyens</div>
+      <div id="top5"><p class="empty">Entrez un ID de serveur pour afficher les données.</p></div>
     </div>
   </div>
 
   <!-- LEADERBOARD -->
-  <div class="tab-content" id="tab-leaderboard">
-    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
-      <button class="btn-primary" onclick="loadLeaderboard('best')">👑 Réputation</button>
-      <button class="btn-primary" onclick="loadLeaderboard('gold')">🪙 Fortune</button>
-      <button class="btn-primary" onclick="loadLeaderboard('trials')">⚖️ Jugements</button>
-      <button class="btn-primary" onclick="loadLeaderboard('worst')">💀 Bannis</button>
+  <div class="tab-pane" id="pane-leaderboard">
+    <div class="sub-tabs">
+      <button class="btn btn-sky" onclick="loadLeaderboard('best')">👑 Réputation</button>
+      <button class="btn btn-sky" onclick="loadLeaderboard('gold')">🪙 Fortune</button>
+      <button class="btn btn-sky" onclick="loadLeaderboard('trials')">⚖️ Jugements</button>
+      <button class="btn btn-sky" onclick="loadLeaderboard('worst')">💀 Bannis</button>
     </div>
-    <div class="parchment-card">
-      <div class="card-border"></div>
-      <div class="card-corner tl"></div><div class="card-corner tr"></div>
-      <div class="card-corner bl"></div><div class="card-corner br"></div>
-      <div id="leaderboardContent"><p class="empty-scroll">Entrez un ID de serveur.</p></div>
+    <div class="card">
+      <div id="lb-content"><p class="empty">Entrez un ID de serveur.</p></div>
     </div>
   </div>
 
   <!-- TRIALS -->
-  <div class="tab-content" id="tab-trials">
-    <div class="parchment-card">
-      <div class="card-border"></div>
-      <div class="card-corner tl"></div><div class="card-corner tr"></div>
-      <div class="card-corner bl"></div><div class="card-corner br"></div>
-      <h2 class="section-title">📋 Derniers Procès</h2>
-      <div id="trialsContent"><p class="empty-scroll">Entrez un ID de serveur.</p></div>
+  <div class="tab-pane" id="pane-trials">
+    <div class="card">
+      <div class="section-title">📋 Derniers Procès</div>
+      <div id="trials-content"><p class="empty">Entrez un ID de serveur.</p></div>
     </div>
   </div>
 
   <!-- QUESTS -->
-  <div class="tab-content" id="tab-quests">
-    <h2 class="section-title" style="color:var(--parchment-dark)">📜 Tableau des Quêtes</h2>
-    <div class="quest-grid" id="questsContent">
-      <p class="empty-scroll" style="color:var(--ink-faded)">Entrez un ID de serveur.</p>
+  <div class="tab-pane" id="pane-quests">
+    <div class="section-title">📜 Tableau des Quêtes</div>
+    <div class="quest-grid" id="quests-content">
+      <p class="empty">Entrez un ID de serveur.</p>
     </div>
   </div>
 
   <!-- GUILDES -->
-  <div class="tab-content" id="tab-guildes">
-    <h2 class="section-title" style="color:var(--parchment-dark)">⚔️ Guildes du Royaume</h2>
-    <div class="guildes-grid" id="guildesContent">
-      <p class="empty-scroll" style="color:var(--ink-faded)">Entrez un ID de serveur.</p>
+  <div class="tab-pane" id="pane-guildes">
+    <div class="section-title">⚔️ Guildes du Royaume</div>
+    <div class="guildes-grid" id="guildes-content">
+      <p class="empty">Entrez un ID de serveur.</p>
     </div>
   </div>
 
   <!-- BOUNTIES -->
-  <div class="tab-content" id="tab-bounties">
-    <h2 class="section-title" style="color:var(--parchment-dark)">💰 Avis de Recherche</h2>
-    <div id="bountiesContent">
-      <p class="empty-scroll" style="color:var(--ink-faded)">Entrez un ID de serveur.</p>
-    </div>
+  <div class="tab-pane" id="pane-bounties">
+    <div class="section-title">💰 Avis de Recherche</div>
+    <div id="bounties-content"><p class="empty">Entrez un ID de serveur.</p></div>
   </div>
 
   <!-- LAWS -->
-  <div class="tab-content" id="tab-laws">
-    <div class="parchment-card">
-      <div class="card-border"></div>
-      <div class="card-corner tl"></div><div class="card-corner tr"></div>
-      <div class="card-corner bl"></div><div class="card-corner br"></div>
-      <h2 class="section-title">📖 Code Pénal du Royaume</h2>
-      <div id="lawsContent"><p class="empty-scroll">Entrez un ID de serveur.</p></div>
+  <div class="tab-pane" id="pane-laws">
+    <div class="card">
+      <div class="section-title">📖 Code Pénal</div>
+      <div id="laws-content"><p class="empty">Entrez un ID de serveur.</p></div>
     </div>
   </div>
 
@@ -679,191 +538,216 @@
 <footer>✦ PLAID — Tribunal du Royaume ✦ Que la justice soit éternelle ✦</footer>
 
 <script>
-  const API = 'https://plaid-api-6ddd.onrender.com';
-  let currentGuildId = null;
+// ⚠️ METS ICI L'URL DE TON API RENDER
+const API = 'https://plaid-api-6ddd.onrender.com';
 
-  function switchTab(tab) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+let guildId = null;
+let lbSort  = 'best';
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + tab).classList.add('active');
-    event.target.classList.add('active');
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('pane-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+async function apiFetch(path) {
+  const r = await fetch(API + path);
+  if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+  return r.json();
+}
+
+function getRank(rep) {
+  if (rep >= 500) return '👑 Légende';
+  if (rep >= 300) return '⚔️ Chevalier';
+  if (rep >= 200) return '🛡️ Gardien';
+  if (rep >= 100) return '⚖️ Citoyen';
+  if (rep >= 50)  return '🧑 Lambda';
+  return '⛓️ Banni';
+}
+
+function repBar(rep) {
+  const pct = Math.max(0, Math.min((rep / 500) * 100, 100)).toFixed(1);
+  return `<div class="rep-wrap">
+    <div class="rep-track"><div class="rep-fill" style="width:${pct}%"></div></div>
+    <span class="rep-num">${rep}</span>
+  </div>`;
+}
+
+function medal(i) {
+  if (i===0) return '<span class="m1">🥇</span>';
+  if (i===1) return '<span class="m2">🥈</span>';
+  if (i===2) return '<span class="m3">🥉</span>';
+  return `<span class="mn">#${i+1}</span>`;
+}
+
+async function loadAll() {
+  guildId = document.getElementById('guildId').value.trim();
+  if (!guildId) return;
+
+  try {
+    const s = await apiFetch(`/api/stats/${guildId}`);
+    document.getElementById('s-users').textContent    = s.users;
+    document.getElementById('s-trials').textContent   = s.trials;
+    document.getElementById('s-laws').textContent     = s.laws;
+    document.getElementById('s-quests').textContent   = s.quests;
+    document.getElementById('s-guildes').textContent  = s.guildes;
+    document.getElementById('s-bounties').textContent = s.bounties;
+  } catch(e) {
+    console.error('Stats:', e);
   }
 
-  function getRank(rep) {
-    if (rep >= 500) return '👑 Légende';
-    if (rep >= 300) return '⚔️ Chevalier';
-    if (rep >= 200) return '🛡️ Gardien';
-    if (rep >= 100) return '⚖️ Citoyen';
-    if (rep >= 50)  return '🧑 Lambda';
-    return '⛓️ Banni';
-  }
+  loadTop5();
+  loadLeaderboard(lbSort);
+  loadTrials();
+  loadQuests();
+  loadGuildes();
+  loadBounties();
+  loadLaws();
+}
 
-  function repBar(rep) {
-    const pct = Math.max(0, Math.min(100, (rep / 500) * 100));
-    return `<div class="rep-bar-wrap">
-      <div class="rep-bar"><div class="rep-bar-fill" style="width:${pct}%"></div></div>
-      <span class="rep-val">${rep}</span>
-    </div>`;
-  }
+async function loadTop5() {
+  if (!guildId) return;
+  try {
+    const data = await apiFetch(`/api/leaderboard/${guildId}?sort=best&limit=5`);
+    if (!data.length) { document.getElementById('top5').innerHTML = '<p class="empty">Aucun citoyen enregistré.</p>'; return; }
+    document.getElementById('top5').innerHTML = `
+      <table class="data-table">
+        <thead><tr><th></th><th>Discord ID</th><th>Rang</th><th>Réputation</th><th>🪙 Or</th></tr></thead>
+        <tbody>${data.map((u,i) => `<tr>
+          <td>${medal(i)}</td>
+          <td style="font-family:'Cinzel',serif;font-size:0.85rem">${u.discord_id}</td>
+          <td style="font-size:0.82rem;color:var(--ink-soft)">${getRank(u.reputation)}</td>
+          <td>${repBar(u.reputation)}</td>
+          <td style="color:var(--gold);font-family:'Cinzel',serif">${u.gold || 0}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+  } catch(e) { document.getElementById('top5').innerHTML = `<p class="empty">Erreur de chargement.</p>`; }
+}
 
-  function medal(i) {
-    if (i === 0) return '<span class="medal-1">👑</span>';
-    if (i === 1) return '<span class="medal-2">⚔️</span>';
-    if (i === 2) return '<span class="medal-3">🛡️</span>';
-    return `<span class="medal-n">#${i+1}</span>`;
-  }
-
-  async function apiFetch(path) {
-    const r = await fetch(API + path);
-    if (!r.ok) throw new Error('API Error ' + r.status);
-    return r.json();
-  }
-
-  async function loadAll() {
-    const id = document.getElementById('guildId').value.trim();
-    if (!id) return;
-    currentGuildId = id;
-
-    try {
-      const stats = await apiFetch(`/api/stats/${id}`);
-      document.getElementById('stat-users').textContent = stats.users;
-      document.getElementById('stat-trials').textContent = stats.trials;
-      document.getElementById('stat-laws').textContent = stats.laws;
-      document.getElementById('stat-quests').textContent = stats.quests;
-      document.getElementById('stat-guildes').textContent = stats.guildes;
-      document.getElementById('stat-bounties').textContent = stats.bounties;
-    } catch(e) {}
-
-    loadLeaderboard('best', true);
-    loadTrials();
-    loadQuests();
-    loadGuildes();
-    loadBounties();
-    loadLaws();
-  }
-
-  async function loadLeaderboard(sort = 'best', isTop5 = false) {
-    if (!currentGuildId) return;
-    const data = await apiFetch(`/api/leaderboard/${currentGuildId}?sort=${sort}&limit=10`).catch(() => []);
-
-    if (isTop5) {
-      const top5 = data.slice(0, 5);
-      if (!top5.length) { document.getElementById('topCitizens').innerHTML = '<p class="empty-scroll">Aucun citoyen enregistré.</p>'; return; }
-      document.getElementById('topCitizens').innerHTML = `
-        <table class="parchment-table">
-          <thead><tr><th>#</th><th>Citoyen</th><th>Rang</th><th>Réputation</th><th>🪙 Or</th></tr></thead>
-          <tbody>${top5.map((u,i) => `<tr>
-            <td>${medal(i)}</td>
-            <td style="font-family:'Cinzel',serif;font-weight:600">${u.discord_id}</td>
-            <td class="rank-badge">${getRank(u.reputation)}</td>
-            <td>${repBar(u.reputation)}</td>
-            <td style="color:var(--gold-bright)">${u.gold || 0} 🪙</td>
-          </tr>`).join('')}</tbody>
-        </table>`;
-      return;
-    }
-
-    if (!data.length) { document.getElementById('leaderboardContent').innerHTML = '<p class="empty-scroll">Aucune donnée.</p>'; return; }
-    document.getElementById('leaderboardContent').innerHTML = `
-      <table class="parchment-table">
+async function loadLeaderboard(sort = 'best') {
+  lbSort = sort;
+  if (!guildId) return;
+  document.getElementById('lb-content').innerHTML = '<p class="loading">⏳ Chargement...</p>';
+  try {
+    const data = await apiFetch(`/api/leaderboard/${guildId}?sort=${sort}&limit=10`);
+    const titles = { best:'👑 Meilleurs Citoyens', worst:'💀 Pires Criminels', gold:'🪙 Les Plus Fortunés', trials:'⚖️ Les Plus Jugés' };
+    if (!data.length) { document.getElementById('lb-content').innerHTML = '<p class="empty">Aucune donnée.</p>'; return; }
+    document.getElementById('lb-content').innerHTML = `
+      <div class="section-title">${titles[sort] || '👑 Classement'}</div>
+      <table class="data-table">
         <thead><tr><th>#</th><th>Discord ID</th><th>Rang</th><th>Réputation</th><th>🪙 Or</th><th>⚖️ Procès</th></tr></thead>
         <tbody>${data.map((u,i) => `<tr>
           <td>${medal(i)}</td>
-          <td style="font-family:'Cinzel',serif">${u.discord_id}</td>
-          <td class="rank-badge">${getRank(u.reputation)}</td>
+          <td style="font-family:'Cinzel',serif;font-size:0.85rem">${u.discord_id}</td>
+          <td style="font-size:0.82rem">${getRank(u.reputation)}</td>
           <td>${repBar(u.reputation)}</td>
-          <td style="color:var(--gold-bright)">${u.gold || 0}</td>
+          <td style="color:var(--gold);font-family:'Cinzel',serif">${u.gold || 0}</td>
           <td>${u.total_trials}</td>
         </tr>`).join('')}</tbody>
       </table>`;
-  }
+  } catch(e) { document.getElementById('lb-content').innerHTML = `<p class="empty">Erreur de chargement.</p>`; }
+}
 
-  async function loadTrials() {
-    if (!currentGuildId) return;
-    const data = await apiFetch(`/api/trials/${currentGuildId}?limit=20`).catch(() => []);
-    if (!data.length) { document.getElementById('trialsContent').innerHTML = '<p class="empty-scroll">Aucun procès enregistré.</p>'; return; }
-    document.getElementById('trialsContent').innerHTML = `
-      <table class="parchment-table">
-        <thead><tr><th>#</th><th>Accusé</th><th>Accusateur</th><th>Chef d'accusation</th><th>Verdict</th><th>Date</th></tr></thead>
+async function loadTrials() {
+  if (!guildId) return;
+  try {
+    const data = await apiFetch(`/api/trials/${guildId}?limit=20`);
+    if (!data.length) { document.getElementById('trials-content').innerHTML = '<p class="empty">Aucun procès.</p>'; return; }
+    document.getElementById('trials-content').innerHTML = `
+      <table class="data-table">
+        <thead><tr><th>#</th><th>Accusé</th><th>Accusateur</th><th>Motif</th><th>Verdict</th><th>Date</th></tr></thead>
         <tbody>${data.map(t => {
-          const vbadge = t.verdict === 'coupable' ? 'badge-coupable' : t.verdict === 'innocent' ? 'badge-innocent' : 'badge-open';
-          const vlabel = t.verdict || 'En cours';
+          const v = t.verdict;
+          const cls = v === 'coupable' ? 'badge-guilty' : v === 'innocent' ? 'badge-innocent' : 'badge-open';
+          const label = v || 'En cours';
           const date = new Date(t.created_at).toLocaleDateString('fr-FR');
           return `<tr>
-            <td style="font-family:'Cinzel',serif;color:var(--gold-bright)">#${t.id}</td>
-            <td>${t.accused_id}</td>
-            <td>${t.accuser_id}</td>
-            <td style="font-style:italic">${t.reason}</td>
-            <td><span class="badge ${vbadge}">${vlabel}</span></td>
-            <td style="font-family:'Cinzel',serif;font-size:0.8rem">${date}</td>
+            <td style="font-family:'Cinzel',serif;color:var(--gold);font-size:0.85rem">#${t.id}</td>
+            <td>${t.accused_id}</td><td>${t.accuser_id}</td>
+            <td style="font-style:italic;font-size:0.85rem">${t.reason}</td>
+            <td><span class="badge ${cls}">${label}</span></td>
+            <td style="font-size:0.8rem;color:var(--ink-muted)">${date}</td>
           </tr>`;
         }).join('')}</tbody>
       </table>`;
-  }
+  } catch(e) { document.getElementById('trials-content').innerHTML = `<p class="empty">Erreur.</p>`; }
+}
 
-  async function loadQuests() {
-    if (!currentGuildId) return;
-    const data = await apiFetch(`/api/quests/${currentGuildId}`).catch(() => []);
-    if (!data.length) { document.getElementById('questsContent').innerHTML = '<p class="empty-scroll" style="color:var(--ink-faded)">Aucune quête disponible.</p>'; return; }
-    document.getElementById('questsContent').innerHTML = data.map(q => {
+async function loadQuests() {
+  if (!guildId) return;
+  try {
+    const data = await apiFetch(`/api/quests/${guildId}`);
+    if (!data.length) { document.getElementById('quests-content').innerHTML = '<p class="empty">Aucune quête disponible.</p>'; return; }
+    document.getElementById('quests-content').innerHTML = data.map(q => {
       const rewards = [];
-      if (q.reward_rep) rewards.push(`⚖️ ${q.reward_rep} rép`);
+      if (q.reward_rep)  rewards.push(`⚖️ ${q.reward_rep} rép`);
       if (q.reward_gold) rewards.push(`🪙 ${q.reward_gold} or`);
       if (q.reward_badge) rewards.push(q.reward_badge);
       return `<div class="quest-card">
-        <div class="quest-title">${q.title}</div>
+        <div class="quest-title">📜 ${q.title}</div>
         <div class="quest-desc">${q.description}</div>
         <div class="quest-rewards">${rewards.map(r => `<span class="reward-chip">${r}</span>`).join('')}</div>
       </div>`;
     }).join('');
-  }
+  } catch(e) { document.getElementById('quests-content').innerHTML = `<p class="empty">Erreur.</p>`; }
+}
 
-  async function loadGuildes() {
-    if (!currentGuildId) return;
-    const data = await apiFetch(`/api/guildes/${currentGuildId}`).catch(() => []);
-    if (!data.length) { document.getElementById('guildesContent').innerHTML = '<p class="empty-scroll" style="color:var(--ink-faded)">Aucune guilde fondée.</p>'; return; }
-    document.getElementById('guildesContent').innerHTML = data.map(g => `
+async function loadGuildes() {
+  if (!guildId) return;
+  try {
+    const data = await apiFetch(`/api/guildes/${guildId}`);
+    if (!data.length) { document.getElementById('guildes-content').innerHTML = '<p class="empty">Aucune guilde.</p>'; return; }
+    document.getElementById('guildes-content').innerHTML = data.map(g => `
       <div class="guilde-card">
         <span class="guilde-emblem">${g.emblem || '⚔️'}</span>
         <div class="guilde-name">${g.name}</div>
         <div class="guilde-desc">${g.description || 'Guilde mystérieuse...'}</div>
         <div class="guilde-members">⚔️ ${g.members ? g.members.length : 0} membre(s)</div>
       </div>`).join('');
-  }
+  } catch(e) { document.getElementById('guildes-content').innerHTML = `<p class="empty">Erreur.</p>`; }
+}
 
-  async function loadBounties() {
-    if (!currentGuildId) return;
-    const data = await apiFetch(`/api/bounties/${currentGuildId}`).catch(() => []);
-    if (!data.length) { document.getElementById('bountiesContent').innerHTML = '<p class="empty-scroll" style="color:var(--ink-faded)">Aucun avis de recherche actif.</p>'; return; }
-    document.getElementById('bountiesContent').innerHTML = data.map(b => `
-      <div class="bounty-card">
-        <div class="bounty-amount">🪙 ${b.amount}</div>
+async function loadBounties() {
+  if (!guildId) return;
+  try {
+    const data = await apiFetch(`/api/bounties/${guildId}`);
+    if (!data.length) { document.getElementById('bounties-content').innerHTML = '<p class="empty">Aucune prime active.</p>'; return; }
+    document.getElementById('bounties-content').innerHTML = data.map(b => `
+      <div class="bounty-item">
+        <div class="bounty-gold">🪙 ${b.amount}</div>
         <div>
           <div class="bounty-target">🎯 Cible : ${b.target_id}</div>
           <div class="bounty-reason">${b.reason || 'Raison non précisée'}</div>
         </div>
       </div>`).join('');
-  }
+  } catch(e) { document.getElementById('bounties-content').innerHTML = `<p class="empty">Erreur.</p>`; }
+}
 
-  async function loadLaws() {
-    if (!currentGuildId) return;
-    const data = await apiFetch(`/api/laws/${currentGuildId}`).catch(() => []);
-    if (!data.length) { document.getElementById('lawsContent').innerHTML = '<p class="empty-scroll">Aucune loi promulguée.</p>'; return; }
-    document.getElementById('lawsContent').innerHTML = `
-      <table class="parchment-table">
+async function loadLaws() {
+  if (!guildId) return;
+  try {
+    const data = await apiFetch(`/api/laws/${guildId}`);
+    if (!data.length) { document.getElementById('laws-content').innerHTML = '<p class="empty">Aucune loi promulguée.</p>'; return; }
+    document.getElementById('laws-content').innerHTML = `
+      <table class="data-table">
         <thead><tr><th>Article</th><th>Loi</th><th>Description</th><th>Peine</th></tr></thead>
         <tbody>${data.map(l => `<tr>
-          <td style="font-family:'Cinzel Decorative',serif;color:var(--gold-bright)">${l.id}</td>
-          <td style="font-family:'Cinzel',serif;font-weight:700">${l.name}</td>
-          <td style="font-style:italic">${l.description}</td>
-          <td>${l.penalty || '—'}</td>
+          <td style="font-family:'Cinzel',serif;color:var(--gold);font-weight:700">${l.id}</td>
+          <td style="font-family:'Cinzel',serif;font-size:0.9rem;font-weight:600">${l.name}</td>
+          <td style="font-style:italic;font-size:0.85rem">${l.description}</td>
+          <td style="font-size:0.83rem">${l.penalty || '—'}</td>
         </tr>`).join('')}</tbody>
       </table>`;
-  }
+  } catch(e) { document.getElementById('laws-content').innerHTML = `<p class="empty">Erreur.</p>`; }
+}
 
-  document.getElementById('guildId').addEventListener('keydown', e => {
-    if (e.key === 'Enter') loadAll();
-  });
+document.getElementById('guildId').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadAll();
+});
 </script>
 </body>
 </html>
