@@ -13,6 +13,8 @@ async def init_db():
     global _pool
     _pool = await asyncpg.create_pool(os.getenv("DATABASE_URL"))
     async with _pool.acquire() as conn:
+
+        # ── Tables de base ─────────────────────────────────────────────
         await conn.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -101,7 +103,7 @@ async def init_db():
 
             CREATE TABLE IF NOT EXISTS quest_completions (
                 id SERIAL PRIMARY KEY,
-                quest_id INTEGER REFERENCES quests(id),
+                quest_id INTEGER,
                 guild_id BIGINT NOT NULL,
                 discord_id BIGINT NOT NULL,
                 completed_at TIMESTAMP DEFAULT NOW(),
@@ -117,4 +119,22 @@ async def init_db():
                 created_at TIMESTAMP DEFAULT NOW()
             );
         """)
+
+        # ── Migration : ajouter les colonnes manquantes si la table
+        #    users existait déjà sans elles ────────────────────────────
+        migrations = [
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS wins INTEGER DEFAULT 0",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS losses INTEGER DEFAULT 0",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS gold INTEGER DEFAULT 0",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS badges TEXT[] DEFAULT '{}'",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS title TEXT DEFAULT 'Citoyen'",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS guild_name TEXT",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS total_trials INTEGER DEFAULT 0",
+        ]
+        for sql in migrations:
+            try:
+                await conn.execute(sql)
+            except Exception as e:
+                print(f"Migration warning (ignoré): {e}")
+
     print("✅ Base de données initialisée")
