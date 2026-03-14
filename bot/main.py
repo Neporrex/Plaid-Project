@@ -26,14 +26,25 @@ class PlaidBot(commands.Bot):
             "cogs.quetes",
             "cogs.serment",
             "cogs.rehabilitation",
+            "cogs.admin",
         ]
         for cog in cogs:
-            await self.load_extension(cog)
+            try:
+                await self.load_extension(cog)
+                print(f"✅ {cog} chargé")
+            except Exception as e:
+                print(f"❌ Erreur {cog}: {e}")
         await self.tree.sync()
         print("✅ Commandes synchronisées")
 
     async def on_ready(self):
         print(f"⚖️ PLAID connecté en tant que {self.user}")
+        await self.change_presence(
+            activity=discord.Activity(
+                type=discord.ActivityType.watching,
+                name="⚖️ La justice"
+            )
+        )
 
 bot = PlaidBot()
 bot.run(os.getenv("DISCORD_TOKEN"))
